@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Fera Esportes</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f1117;--bg2:#161b25;--surf:#1c2230;--surf2:#232c3b;
+  --brd:#2a3347;--brd2:#334060;
+  --gold:#f0a500;--gold2:#ffc340;--gdim:rgba(240,165,0,.12);
+  --txt:#e8eaf0;--mut:#7a8499;--mut2:#4a5568;
+  --grn:#22c55e;--red:#ef4444;--blu:#3b82f6;
+  --sh:0 4px 20px rgba(0,0,0,.4)
+}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;overflow-x:hidden}
+body{max-width:430px;margin:0 auto;position:relative}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--brd);padding:0 16px;height:54px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:8px}
+.brand-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--gold);line-height:1}
+.brand-sub{font-size:10px;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase}
+.hdr-ev{font-size:11px;color:var(--mut);max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
+.hdr-ev b{color:var(--gold);display:block;font-size:12px}
+
+/* NAV */
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--bg2);border-top:1px solid var(--brd);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;padding:10px 2px 7px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--mut2);transition:color .2s;font-family:'DM Sans',sans-serif}
+nav button.on{color:var(--gold)}
+nav button .ic{font-size:19px}
+nav button .lb{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+nav button.on::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:24px;height:2px;background:var(--gold);border-radius:2px 2px 0 0}
+
+/* PAGES */
+.page{display:none;padding:14px 14px 90px;animation:fadeIn .2s ease}
+.page.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.card{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:10px}
+.card-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stat{background:var(--surf);border:1px solid var(--brd);border-radius:10px;padding:12px 12px 10px}
+.stat-v{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;color:var(--gold)}
+.stat-v.blue{color:var(--blu)}
+.stat-v.green{color:var(--grn)}
+.stat-v.red{color:var(--red)}
+.stat-l{font-size:10px;color:var(--mut);margin-top:2px;font-weight:500}
+
+/* BUTTONS */
+.btn{display:block;width:100%;padding:12px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-align:center;letter-spacing:.3px;transition:opacity .15s}
+.btn:active{opacity:.8}
+.btn-gold{background:var(--gold);color:#0f1117}
+.btn-dark{background:var(--surf2);border:1px solid var(--brd2);color:var(--txt)}
+.btn-green{background:#16a34a;color:#fff}
+.btn-red{background:#b91c1c;color:#fff}
+.btn-wa{background:#128C7E;color:#fff;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn-sm{padding:7px 12px;font-size:11px;border-radius:8px;display:inline-block;width:auto}
+
+/* INPUT */
+.inp-wrap{margin-bottom:10px}
+.inp-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mut);margin-bottom:5px;display:block}
+.inp{width:100%;padding:10px 12px;background:var(--surf);border:1px solid var(--brd2);border-radius:9px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--gold)}
+.inp::placeholder{color:var(--mut2)}
+select.inp{cursor:pointer}
+.inp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* SEARCH */
+.search-wrap{display:flex;align-items:center;gap:8px;background:var(--surf);border:1px solid var(--brd);border-radius:10px;padding:9px 12px;margin-bottom:10px}
+.search-wrap span{font-size:14px;color:var(--mut)}
+.search-wrap input{flex:1;background:none;border:none;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
+.search-wrap input::placeholder{color:var(--mut2)}
+
+/* FILTERS */
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{height:2px}
+.chip{background:var(--surf);border:1px solid var(--brd);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--mut);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.chip.on{background:var(--gold);color:#0f1117;border-color:var(--gold)}
+
+/* EVENT CARD */
+.ev-card{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:13px;margin-bottom:8px;cursor:pointer;transition:border-color .2s}
+.ev-card.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gdim)}
+.ev-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;line-height:1.1;margin-bottom:4px}
+.ev-meta{font-size:11px;color:var(--mut);display:flex;flex-wrap:wrap;gap:8px}
+.ev-meta span{display:flex;align-items:center;gap:3px}
+.ev-actions{display:flex;gap:6px;margin-top:10px}
+.badge-active{background:var(--gold);color:#0f1117;font-size:8px;font-weight:800;letter-spacing:1px;padding:2px 6px;border-radius:10px;text-transform:uppercase}
+
+/* PARTICIPANT */
+.ath{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surf);border:1px solid var(--brd);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:border-color .2s}
+.ath:active{border-color:var(--gold)}
+.ath-av{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;flex-shrink:0;letter-spacing:1px}
+.av-m{background:rgba(59,130,246,.15);color:var(--blu)}
+.av-f{background:rgba(239,68,68,.12);color:var(--red)}
+.ath-info{flex:1;min-width:0}
+.ath-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ath-sub{font-size:10px;color:var(--mut);margin-top:2px}
+.ath-right{flex-shrink:0;text-align:right}
+.sz-badge{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);line-height:1}
+.pago-dot{width:7px;height:7px;border-radius:50%;margin-top:4px;margin-left:auto}
+
+/* STATUS BADGE */
+.status{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:3px 7px;border-radius:10px;letter-spacing:.5px;text-transform:uppercase}
+
+/* MODAL */
+.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.modal.on{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--brd);border-radius:18px 18px 0 0;padding:20px 16px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;color:var(--gold);margin-bottom:14px}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--surf2);border:1px solid var(--brd);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--mut);cursor:pointer;font-size:14px}
+
+/* TOAST */
+.toast{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-16px);z-index:200;background:var(--surf2);border:1px solid var(--brd2);color:var(--txt);padding:9px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--sh)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* IMPORT */
+.drop-zone{border:2px dashed var(--brd2);border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--gold);background:var(--gdim)}
+.drop-icon{font-size:36px;margin-bottom:8px}
+
+/* COL MAP */
+.col-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd)}
+.col-row:last-child{border:none}
+.col-label{font-size:12px;font-weight:600;color:var(--txt)}
+.col-row select{background:var(--surf2);border:1px solid var(--brd2);border-radius:7px;padding:5px 8px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:11px;max-width:160px;cursor:pointer;outline:none}
+
+/* BARS */
+.bar-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.bar-lbl{font-size:11px;color:var(--mut);width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;background:var(--surf2);border-radius:4px;height:16px;overflow:hidden}
+.bar-fill{height:16px;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;min-width:20px}
+.bar-num{font-size:10px;font-weight:700;color:#fff;padding-right:5px;font-family:'JetBrains Mono',monospace}
+
+/* WA QUEUE */
+.wa-item{background:var(--surf2);border:1px solid var(--brd);border-radius:9px;padding:9px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.wa-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mut);width:22px}
+
+/* LOADING */
+.loading{display:flex;flex-direction:column;align-items:center;padding:28px;gap:10px}
+.spin{width:28px;height:28px;border:3px solid var(--brd);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* EMPTY */
+.empty{text-align:center;padding:36px 20px;color:var(--mut)}
+.empty-icon{font-size:40px;margin-bottom:10px}
+
+/* CONFIRM */
+.confirm-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+
+/* DIVIDER */
+.div{height:1px;background:var(--brd);margin:12px 0}
+
+/* DETAIL GRID */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.detail-cell{background:var(--surf2);border-radius:8px;padding:10px}
+.detail-cell-l{font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;font-weight:700}
+.detail-cell-v{font-weight:700;font-size:13px}
+
+/* SCRAPING */
+.scrape-item{background:var(--surf2);border:1px solid var(--brd);border-radius:9px;padding:11px;margin-bottom:7px}
+.scrape-name{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.8px;margin-bottom:3px}
+.scrape-meta{font-size:11px;color:var(--mut);margin-bottom:8px}
+.scrape-actions{display:flex;gap:6px}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="brand">
+    <div>
+      <div class="brand-logo">⚡ FERA</div>
+      <div class="brand-sub">Esportes</div>
+    </div>
+  </div>
+  <div class="hdr-ev" id="hdr-ev-info">
+    <span style="color:var(--mut2);font-size:11px">Nenhum evento</span>
+  </div>
+</header>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══ EVENTOS ═══ -->
+<div class="page on" id="pg-eventos">
+
+  <!-- Buscar no site -->
+  <div class="card" style="margin-bottom:10px">
+    <div class="card-title">🌐 Buscar em feraesportes.com.br</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-gold" style="flex:1;padding:11px" onclick="buscarEventosSite()">🔄 Buscar Eventos do Site</button>
+    </div>
+    <div id="scrape-status" style="display:none;margin-top:10px"></div>
+    <div id="scrape-results"></div>
+  </div>
+
+  <!-- Lista de eventos -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mut)" id="ev-count-label">Seus eventos</div>
+    <button class="btn btn-gold btn-sm" onclick="abrirModalEvento(null)">+ Novo Evento</button>
+  </div>
+
+  <div id="ev-list">
+    <div class="empty"><div class="empty-icon">📅</div><div>Nenhum evento ainda.<br>Crie um ou busque no site.</div></div>
+  </div>
+</div>
+
+<!-- ═══ ATLETAS ═══ -->
+<div class="page" id="pg-atletas">
+  <div class="search-wrap">
+    <span>🔍</span>
+    <input type="text" id="busca" placeholder="Buscar nome, cidade, telefone, equipe..." oninput="renderAtletas()">
+  </div>
+  <div class="filters" id="filtros">
+    <button class="chip on" onclick="setFiltro('todos',this)">Todos</button>
+    <button class="chip" onclick="setFiltro('M',this)">♂ Masc</button>
+    <button class="chip" onclick="setFiltro('F',this)">♀ Fem</button>
+    <button class="chip" onclick="setFiltro('nao_pago',this)">⚠️ Não Pago</button>
+    <button class="chip" onclick="setFiltro('pago',this)">✅ Pago</button>
+    <button class="chip" onclick="setFiltro('sem_tel',this)">📵 Sem Tel</button>
+  </div>
+  <!-- Stats rápidas -->
+  <div id="dash-stats" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="stat-v" id="s-total">0</div><div class="stat-l">Total</div></div>
+      <div class="stat"><div class="stat-v blue" id="s-cidades">0</div><div class="stat-l">Cidades</div></div>
+      <div class="stat"><div class="stat-v" id="s-masc">0</div><div class="stat-l">Masculino</div></div>
+      <div class="stat"><div class="stat-v red" id="s-fem">0</div><div class="stat-l">Feminino</div></div>
+    </div>
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">👕 Camisetas</div>
+      <div id="cam-bars"></div>
+    </div>
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">🏙️ Cidades</div>
+      <div id="city-bars"></div>
+    </div>
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">💰 Financeiro</div>
+      <div id="fin-info"></div>
+    </div>
+  </div>
+  <div id="atleta-list">
+    <div class="empty"><div class="empty-icon">👥</div><div>Selecione um evento e importe atletas.</div></div>
+  </div>
+</div>
+
+<!-- ═══ IMPORTAR ═══ -->
+<div class="page" id="pg-importar">
+  <div id="import-ev-warn" class="card" style="border-color:#f0a500;display:none">
+    <div style="color:var(--gold);font-size:12px;font-weight:600">⚠️ Nenhum evento ativo!<br><span style="color:var(--mut);font-weight:400">Selecione ou crie um evento primeiro.</span></div>
+    <button class="btn btn-gold" style="margin-top:10px;padding:9px" onclick="showPage('pg-eventos');nav('pg-eventos')">Ir para Eventos</button>
+  </div>
+
+  <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-in').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');handleDrop(event)">
+    <div class="drop-icon">📊</div>
+    <div style="font-weight:700;font-size:14px;margin-bottom:4px">Toque para selecionar planilha</div>
+    <div style="font-size:11px;color:var(--mut)">Excel (.xlsx, .xls) ou CSV (.csv)</div>
+    <div style="font-size:10px;color:var(--mut2);margin-top:4px">Separa por ; (ponto e vírgula) ou , (vírgula)</div>
+  </div>
+  <input type="file" id="file-in" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFile(event)">
+
+  <div id="import-loading" style="display:none">
+    <div class="loading"><div class="spin"></div><div style="font-size:12px;color:var(--mut)">Lendo planilha...</div></div>
+  </div>
+
+  <div id="map-card" style="display:none">
+    <div class="card">
+      <div class="card-title">🗂️ Mapeamento de Colunas</div>
+      <div id="col-map"></div>
+    </div>
+    <div style="margin-bottom:8px">
+      <label class="inp-label">Cidade padrão (se planilha não tiver)</label>
+      <input class="inp" id="def-city" placeholder="Ex: Paranavaí">
+    </div>
+    <button class="btn btn-gold" onclick="importar()">✅ IMPORTAR ATLETAS</button>
+  </div>
+
+  <div id="import-done" style="display:none;margin-top:12px"></div>
+</div>
+
+<!-- ═══ WHATSAPP ═══ -->
+<div class="page" id="pg-whatsapp">
+  <div class="card">
+    <div class="card-title">📝 Mensagem</div>
+    <textarea id="wa-msg" class="inp" style="height:90px;resize:none" placeholder="Olá {nome}! Lembrete sobre {evento}. Seu kit tamanho {tamanho} está disponível. 🏃"></textarea>
+    <div style="font-size:10px;color:var(--mut);margin-top:5px">Variáveis: {nome} {evento} {cidade} {tamanho} {percurso}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚙️ Configurar Lote</div>
+    <div style="display:flex;gap:6px;margin-bottom:10px" id="lote-chips">
+      <button class="chip on" onclick="setLote(10,this)">Lote 10</button>
+      <button class="chip" onclick="setLote(25,this)">25</button>
+      <button class="chip" onclick="setLote(50,this)">50</button>
+      <button class="chip" onclick="setLote(100,this)">100</button>
+    </div>
+    <div style="display:flex;gap:7px">
+      <div style="flex:1">
+        <label class="inp-label">Filtrar por</label>
+        <select class="inp" id="wa-filtro" style="padding:9px">
+          <option value="todos">Todos com telefone</option>
+          <option value="nao_pago">Não pagos</option>
+          <option value="pago">Pagos</option>
+          <option value="sem_kit">Kit não retirado</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-gold" onclick="prepararLote()">🚀 PREPARAR LOTE</button>
+
+  <div id="wa-info" style="display:none;margin-top:10px"></div>
+  <div id="wa-queue" style="display:none;margin-top:10px"></div>
+</div>
+
+<!-- ═══ MODAL EVENTO ═══ -->
+<div class="modal" id="modal-ev">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-ev')">✕</button>
+    <div class="modal-title" id="modal-ev-title">Novo Evento</div>
+    <div class="inp-wrap"><label class="inp-label">Nome do Evento *</label><input class="inp" id="ev-nome" placeholder="Ex: Corrida das Rosas 2026"></div>
+    <div class="inp-row">
+      <div class="inp-wrap"><label class="inp-label">Data</label><input class="inp" id="ev-data" type="date"></div>
+      <div class="inp-wrap"><label class="inp-label">Cidade</label><input class="inp" id="ev-cidade" placeholder="Paranavaí"></div>
+    </div>
+    <div class="inp-wrap"><label class="inp-label">Valor Inscrição (R$)</label><input class="inp" id="ev-valor" type="number" placeholder="0.00" step="0.01"></div>
+    <div style="display:flex;gap:7px;margin-top:4px">
+      <button class="btn btn-gold" style="flex:1" onclick="salvarEvento()">✅ Salvar</button>
+      <button class="btn btn-dark" style="flex:1" onclick="closeModal('modal-ev')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL ATLETA ═══ -->
+<div class="modal" id="modal-ath">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-ath')">✕</button>
+    <div id="modal-ath-content"></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL CONFIRMAR ═══ -->
+<div class="modal" id="modal-confirm">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-confirm')">✕</button>
+    <div style="text-align:center">
+      <div id="confirm-icon" style="font-size:40px;margin-bottom:8px"></div>
+      <div id="confirm-msg" style="font-size:14px;color:var(--mut);margin-bottom:4px;line-height:1.5"></div>
+      <div class="confirm-btns">
+        <button class="btn btn-red" id="confirm-ok">Confirmar</button>
+        <button class="btn btn-dark" onclick="closeModal('modal-confirm')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <button class="on" onclick="nav('pg-eventos',this)"><span class="ic">📅</span><span class="lb">Eventos</span></button>
+  <button onclick="nav('pg-atletas',this);renderDash()"><span class="ic">👥</span><span class="lb">Atletas</span></button>
+  <button onclick="nav('pg-importar',this);checkImportWarn()"><span class="ic">📥</span><span class="lb">Importar</span></button>
+  <button onclick="nav('pg-whatsapp',this)"><span class="ic">💬</span><span class="lb">WhatsApp</span></button>
+</nav>
+
+<script>
+// ══════════════════════════════════════════
+//  BANCO DE DADOS (localStorage)
+// ══════════════════════════════════════════
+var db = { events: {}, activeId: null };
+
+(function init() {
+  try {
+    var raw = localStorage.getItem('fera_db');
+    if (raw) db = JSON.parse(raw);
+    if (!db.events) db.events = {};
+    if (!db.activeId) db.activeId = null;
+  } catch (e) { db = { events: {}, activeId: null }; }
+})();
+
+function salvar() {
+  try { localStorage.setItem('fera_db', JSON.stringify(db)); } catch (e) {}
+  atualizarHeader();
+}
+
+function getEvAtivo() {
+  return db.activeId ? db.events[db.activeId] : null;
+}
+
+function getAtletas() {
+  var ev = getEvAtivo();
+  return ev ? (ev.atletas || []) : [];
+}
+
+function setAtletas(list) {
+  var ev = getEvAtivo();
+  if (ev) ev.atletas = list;
+}
+
+// ══════════════════════════════════════════
+//  NAVEGAÇÃO
+// ══════════════════════════════════════════
+var navBtns = document.querySelectorAll('nav button');
+
+function nav(pageId, btn) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('on'); });
+  document.getElementById(pageId).classList.add('on');
+  navBtns.forEach(function(b) { b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  else {
+    var idx = ['pg-eventos','pg-atletas','pg-importar','pg-whatsapp'].indexOf(pageId);
+    if (idx >= 0) navBtns[idx].classList.add('on');
+  }
+}
+
+function showPage(id) { nav(id); }
+
+// ══════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════
+var _toastTimer;
+function toast(msg, dur) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { el.classList.remove('on'); }, dur || 2200);
+}
+
+// ══════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('on'); }
+function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+
+function confirmar(icon, msg, onOk) {
+  document.getElementById('confirm-icon').textContent = icon;
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-ok').onclick = function() { closeModal('modal-confirm'); onOk(); };
+  openModal('modal-confirm');
+}
+
+// ══════════════════════════════════════════
+//  HEADER
+// ══════════════════════════════════════════
+function atualizarHeader() {
+  var ev = getEvAtivo();
+  var el = document.getElementById('hdr-ev-info');
+  if (ev) {
+    var cnt = (ev.atletas || []).length;
+    el.innerHTML = '<b>' + ev.nome.substring(0, 20) + '</b><span>' + cnt + ' atletas</span>';
+  } else {
+    el.innerHTML = '<span style="color:var(--mut2);font-size:11px">Nenhum evento</span>';
+  }
+}
+
+// ══════════════════════════════════════════
+//  EVENTOS
+// ══════════════════════════════════════════
+var _editingEvId = null;
+
+function renderEventos() {
+  var evs = Object.values(db.events).sort(function(a,b) {
+    return (b.criado || '').localeCompare(a.criado || '');
+  });
+  var cnt = document.getElementById('ev-count-label');
+  if (cnt) cnt.textContent = evs.length + ' evento' + (evs.length !== 1 ? 's' : '');
+
+  var lst = document.getElementById('ev-list');
+  if (!evs.length) {
+    lst.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div>Nenhum evento.<br>Crie um ou busque no site acima.</div></div>';
+    return;
+  }
+  lst.innerHTML = evs.map(function(ev) {
+    var isActive = db.activeId === ev.id;
+    var cnt = (ev.atletas || []).length;
+    return '<div class="ev-card' + (isActive ? ' active' : '') + '">'
+      + (isActive ? '<div style="margin-bottom:4px"><span class="badge-active">Ativo</span></div>' : '')
+      + '<div class="ev-name">' + ev.nome + '</div>'
+      + '<div class="ev-meta">'
+      + (ev.data ? '<span>📅 ' + fmtData(ev.data) + '</span>' : '')
+      + (ev.cidade ? '<span>📍 ' + ev.cidade + '</span>' : '')
+      + '<span>👥 ' + cnt + '</span>'
+      + (ev.valor ? '<span>💰 R$ ' + fmtMoney(ev.valor) + '</span>' : '')
+      + '</div>'
+      + '<div class="ev-actions">'
+      + (isActive
+        ? '<button class="btn btn-dark btn-sm" onclick="desativar(event)">✕ Desativar</button>'
+        : '<button class="btn btn-gold btn-sm" onclick="ativarEv(\'' + ev.id + '\',event)">▶ Selecionar</button>')
+      + '<button class="btn btn-dark btn-sm" onclick="abrirModalEvento(\'' + ev.id + '\',event)">✏️ Editar</button>'
+      + '<button class="btn btn-red btn-sm" onclick="deletarEv(\'' + ev.id + '\',event)">🗑️</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+function ativarEv(id, e) {
+  if (e) e.stopPropagation();
+  db.activeId = id;
+  salvar();
+  renderEventos();
+  toast('✅ Evento ativado!');
+}
+
+function desativar(e) {
+  if (e) e.stopPropagation();
+  db.activeId = null;
+  salvar();
+  renderEventos();
+  toast('Evento desativado.');
+}
+
+function deletarEv(id, e) {
+  if (e) e.stopPropagation();
+  var ev = db.events[id]; if (!ev) return;
+  confirmar('🗑️', 'Excluir "' + ev.nome + '"? Todos os atletas serão apagados.', function() {
+    if (db.activeId === id) db.activeId = null;
+    delete db.events[id];
+    salvar(); renderEventos();
+    toast('🗑️ Evento excluído.');
+  });
+}
+
+function abrirModalEvento(id, e) {
+  if (e) e.stopPropagation();
+  _editingEvId = id;
+  var title = document.getElementById('modal-ev-title');
+  var ev = id ? db.events[id] : null;
+  title.textContent = ev ? 'Editar Evento' : 'Novo Evento';
+  document.getElementById('ev-nome').value = ev ? ev.nome : '';
+  document.getElementById('ev-data').value = ev ? ev.data : '';
+  document.getElementById('ev-cidade').value = ev ? ev.cidade : '';
+  document.getElementById('ev-valor').value = ev ? ev.valor : '';
+  openModal('modal-ev');
+}
+
+function salvarEvento() {
+  var nome = document.getElementById('ev-nome').value.trim();
+  if (!nome) { toast('⚠️ Informe o nome!'); return; }
+  if (_editingEvId && db.events[_editingEvId]) {
+    var ev = db.events[_editingEvId];
+    ev.nome = nome;
+    ev.data = document.getElementById('ev-data').value;
+    ev.cidade = document.getElementById('ev-cidade').value.trim();
+    ev.valor = parseFloat(document.getElementById('ev-valor').value) || 0;
+  } else {
+    var newId = 'ev_' + Date.now();
+    db.events[newId] = {
+      id: newId, nome: nome,
+      data: document.getElementById('ev-data').value,
+      cidade: document.getElementById('ev-cidade').value.trim(),
+      valor: parseFloat(document.getElementById('ev-valor').value) || 0,
+      atletas: [], criado: new Date().toISOString()
+    };
+    db.activeId = newId;
+  }
+  closeModal('modal-ev');
+  salvar(); renderEventos();
+  toast('✅ Evento salvo!');
+}
+
+// ══════════════════════════════════════════
+//  SCRAPING feraesportes.com.br
+// ══════════════════════════════════════════
+// Proxies CORS para tentar em sequência
+var PROXIES = [
+  function(url) { return 'https://corsproxy.io/?' + encodeURIComponent(url); },
+  function(url) { return 'https://api.allorigins.win/get?url=' + encodeURIComponent(url); },
+  function(url) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url); }
+];
+
+async function fetchComProxy(url) {
+  var erros = [];
+  for (var i = 0; i < PROXIES.length; i++) {
+    try {
+      var proxyUrl = PROXIES[i](url);
+      var controller = new AbortController();
+      var timer = setTimeout(function() { controller.abort(); }, 8000);
+      var res = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      var text = await res.text();
+      // allorigins retorna JSON {"contents":"..."}
+      if (text.trim().startsWith('{')) {
+        try { var j = JSON.parse(text); text = j.contents || j.html || text; } catch(e) {}
+      }
+      if (text && text.length > 500) return text;
+      throw new Error('Resposta muito curta');
+    } catch (e) {
+      erros.push('Proxy ' + (i+1) + ': ' + e.message);
+    }
+  }
+  throw new Error('Todos os proxies falharam.\n' + erros.join('\n'));
+}
+
+async function buscarEventosSite() {
+  var statusEl = document.getElementById('scrape-status');
+  var resultsEl = document.getElementById('scrape-results');
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = '<div class="loading"><div class="spin"></div><div style="font-size:12px;color:var(--mut)">Buscando em feraesportes.com.br...</div></div>';
+  resultsEl.innerHTML = '';
+
+  try {
+    var html = await fetchComProxy('https://feraesportes.com.br/index.php');
+    var events = parseEventosSite(html);
+
+    statusEl.style.display = 'none';
+
+    if (!events.length) {
+      resultsEl.innerHTML = '<div class="card" style="border-color:var(--brd2)">'
+        + '<div style="font-size:12px;color:var(--mut)">⚠️ Nenhum evento encontrado no site.<br><br>'
+        + '<a href="https://feraesportes.com.br" target="_blank" style="color:var(--gold)">Abrir site manualmente →</a></div></div>';
+      return;
+    }
+
+    resultsEl.innerHTML = '<div style="font-size:11px;color:var(--mut);margin-bottom:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase">'
+      + events.length + ' eventos encontrados</div>'
+      + events.map(function(ev) {
+        var existente = Object.values(db.events).find(function(e) { return e.nome === ev.nome; });
+        var evData = encodeURIComponent(JSON.stringify(ev));
+        return '<div class="scrape-item">'
+          + '<div class="scrape-name">' + ev.nome + '</div>'
+          + '<div class="scrape-meta">'
+          + (ev.data ? '📅 ' + fmtData(ev.data) + (ev.cidade ? '  ' : '') : '')
+          + (ev.cidade ? '📍 ' + ev.cidade : '')
+          + '</div>'
+          + '<div class="scrape-actions">'
+          + (existente
+            ? '<span style="font-size:11px;color:var(--grn)">✅ Já adicionado</span>'
+            : '<button class="btn btn-gold btn-sm" onclick="importarDoSite(decodeURIComponent(\'' + evData + '\'))">➕ Adicionar</button>')
+          + (ev.url ? ' <a href="' + ev.url + '" target="_blank" class="btn btn-dark btn-sm" style="text-decoration:none">🔗 Ver</a>' : '')
+          + '</div></div>';
+      }).join('');
+
+  } catch (err) {
+    statusEl.style.display = 'none';
+    resultsEl.innerHTML = '<div class="card" style="border-color:var(--red)">'
+      + '<div style="color:var(--red);font-size:12px;font-weight:600;margin-bottom:6px">❌ Não foi possível acessar o site</div>'
+      + '<div style="font-size:11px;color:var(--mut);margin-bottom:10px">' + err.message.replace(/\n/g,'<br>') + '</div>'
+      + '<a href="https://feraesportes.com.br" target="_blank" class="btn btn-dark" style="font-size:11px;padding:9px;text-decoration:none">🔗 Abrir site manualmente</a>'
+      + '</div>';
+  }
+}
+
+function parseEventosSite(html) {
+  var events = [];
+  var seen = {};
+
+  // Estratégia 1: regex direto no HTML bruto
+  // Estrutura real do site: <h4>NOME</h4> ... "Dia do evento: DD/MM/YYYY" ... href="evento.php?id=N"
+  var re = /<h4[^>]*>([\s\S]*?)<\/h4>([\s\S]{0,1000}?)(\d{2}\/\d{2}\/\d{4})/gi;
+  var m;
+  while ((m = re.exec(html)) !== null) {
+    var nome = m[1].replace(/<[^>]+>/g, '').trim();
+    if (!nome || nome.length < 4 || nome.length > 120) continue;
+    // Ignorar títulos de seção genéricos curtos
+    var words = nome.trim().split(/\s+/);
+    if (words.length < 2 && /^(eventos?|corrida|caminhada|inscri|atleta|sobre|contato)$/i.test(nome)) continue;
+
+    var dateParts = m[3].split('/');
+    var dataStr = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+
+    var linkMatch = m[2].match(/href=["']([^"']*evento\.php[^"']*id=(\d+)[^"']*)[^>]*>/i);
+    var url = linkMatch ? 'https://feraesportes.com.br/' + linkMatch[1].replace(/&amp;/g,'&') : '';
+
+    var cidadeMatch = m[2].match(/(?:cidade|local|em)\s*[:–\-]?\s*([A-ZÀ-Ú][A-Za-zà-ú\s]{2,25})/i);
+    var cidade = cidadeMatch ? cidadeMatch[1].trim() : '';
+
+    if (!seen[nome]) { seen[nome] = true; events.push({ nome: nome, data: dataStr, cidade: cidade, url: url }); }
+  }
+
+  // Estratégia 2: DOMParser com busca em elementos pai
+  if (!events.length) {
+    try {
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('h4').forEach(function(h4) {
+        var nome = h4.textContent.trim();
+        if (!nome || nome.length < 4 || nome.length > 120) return;
+        var el = h4.parentElement;
+        for (var i = 0; i < 5 && el; i++, el = el.parentElement) {
+          var txt = el.textContent || '';
+          var dm = txt.match(/(\d{2}\/(\d{2})\/(\d{4}))/);
+          if (dm) {
+            var p = dm[1].split('/');
+            var url = '';
+            var lk = el.querySelector('a[href*="evento.php"]');
+            if (lk) url = 'https://feraesportes.com.br/' + lk.getAttribute('href');
+            if (!seen[nome]) { seen[nome] = true; events.push({ nome: nome, data: p[2]+'-'+p[1]+'-'+p[0], cidade: '', url: url }); }
+            break;
+          }
+        }
+      });
+    } catch(e) {}
+  }
+
+  // Estratégia 3: apenas pelos links evento.php?id=N
+  if (!events.length) {
+    var linkRe2 = /href=["'][^"']*evento\.php\?id=(\d+)[^"']*["']/gi;
+    var evIds = {};
+    while ((m = linkRe2.exec(html)) !== null) { evIds[m[1]] = true; }
+    Object.keys(evIds).forEach(function(id) {
+      var nome = 'Evento #' + id;
+      if (!seen[nome]) {
+        seen[nome] = true;
+        events.push({ nome: nome, data: '', cidade: '', url: 'https://feraesportes.com.br/evento.php?id=' + id });
+      }
+    });
+  }
+
+  return events;
+}
+
+function importarDoSite(evArg) {
+  // Accepts either a JSON string (from inline onclick) or an object
+  var ev = (typeof evArg === 'string') ? JSON.parse(evArg) : evArg;
+  var newId = 'ev_' + Date.now();
+  db.events[newId] = {
+    id: newId, nome: ev.nome, data: ev.data || '',
+    cidade: ev.cidade || '', valor: 0,
+    atletas: [], criado: new Date().toISOString(),
+    urlSite: ev.url || ''
+  };
+  db.activeId = newId;
+  salvar(); renderEventos();
+  toast('✅ "' + ev.nome + '" adicionado e ativado!');
+  document.getElementById('ev-list').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════
+//  ATLETAS
+// ══════════════════════════════════════════
+var filtroAtual = 'todos';
+
+function setFiltro(f, btn) {
+  filtroAtual = f;
+  document.querySelectorAll('#filtros .chip').forEach(function(c) { c.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  renderAtletas();
+}
+
+function renderDash() {
+  var aths = getAtletas();
+  var dashEl = document.getElementById('dash-stats');
+  if (!aths.length) { dashEl.style.display = 'none'; return; }
+  dashEl.style.display = 'block';
+
+  var total = aths.length;
+  var masc = aths.filter(function(a) { return a.sexo !== 'F'; }).length;
+  var fem = total - masc;
+  var cidades = new Set(aths.map(function(a) { return a.cidade; }).filter(Boolean)).size;
+
+  setText('s-total', total);
+  setText('s-masc', masc);
+  setText('s-fem', fem);
+  setText('s-cidades', cidades);
+
+  // Camisetas
+  var sizes = { PP:0, P:0, M:0, G:0, GG:0, XG:0 };
+  aths.forEach(function(a) { if (sizes[a.tamanho] !== undefined) sizes[a.tamanho]++; });
+  var maxSz = Math.max.apply(null, Object.values(sizes)) || 1;
+  var colors = ['var(--gold)','#d4a830','var(--grn)','var(--blu)','var(--red)','#7c3aed'];
+  document.getElementById('cam-bars').innerHTML = Object.keys(sizes).map(function(sz, i) {
+    var n = sizes[sz]; var w = Math.round(n / maxSz * 100);
+    return '<div class="bar-row"><div class="bar-lbl">' + sz + '</div><div class="bar-track"><div class="bar-fill" style="width:' + w + '%;background:' + colors[i] + '"><span class="bar-num">' + n + '</span></div></div></div>';
+  }).join('');
+
+  // Cidades
+  var cidadeMap = {};
+  aths.forEach(function(a) { if (a.cidade) cidadeMap[a.cidade] = (cidadeMap[a.cidade] || 0) + 1; });
+  var topCities = Object.entries(cidadeMap).sort(function(a,b) { return b[1]-a[1]; }).slice(0,6);
+  var maxC = topCities.length ? topCities[0][1] : 1;
+  document.getElementById('city-bars').innerHTML = topCities.map(function(c, i) {
+    var w = Math.round(c[1] / maxC * 100);
+    return '<div class="bar-row"><div class="bar-lbl">' + (c[0]||'—').substring(0,10) + '</div><div class="bar-track"><div class="bar-fill" style="width:' + w + '%;background:' + colors[i % 6] + '"><span class="bar-num">' + c[1] + '</span></div></div></div>';
+  }).join('');
+
+  // Financeiro
+  var ev = getEvAtivo();
+  var finEl = document.getElementById('fin-info');
+  if (ev && ev.valor > 0) {
+    var pagos = aths.filter(function(a) { return a.pago === 'sim'; }).length;
+    var recConf = pagos * ev.valor;
+    var recEsp = total * ev.valor;
+    finEl.innerHTML = row('Receita Esperada', 'R$ ' + fmtMoney(recEsp), 'var(--gold)')
+      + row('Receita Confirmada', 'R$ ' + fmtMoney(recConf), 'var(--grn)')
+      + row('Pagos / Pendentes', pagos + ' / ' + (total - pagos), 'var(--txt)');
+  } else {
+    finEl.innerHTML = '<div style="font-size:11px;color:var(--mut)">Configure o valor da inscrição no evento.</div>';
+  }
+}
+
+function row(label, val, color) {
+  return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--brd)">'
+    + '<span style="font-size:12px;color:var(--mut)">' + label + '</span>'
+    + '<span style="font-size:12px;font-weight:700;color:' + color + '">' + val + '</span></div>';
+}
+
+function renderAtletas() {
+  var aths = getAtletas();
+  var q = (document.getElementById('busca').value || '').toLowerCase();
+  var f = filtroAtual;
+
+  var filtered = aths.filter(function(a) {
+    if (f === 'M' && a.sexo !== 'M') return false;
+    if (f === 'F' && a.sexo !== 'F') return false;
+    if (f === 'nao_pago' && a.pago === 'sim') return false;
+    if (f === 'pago' && a.pago !== 'sim') return false;
+    if (f === 'sem_tel' && (a.telefone || '').replace(/\D/g,'').length >= 10) return false;
+    if (q) {
+      var hay = ((a.nome || '') + ' ' + (a.cidade || '') + ' ' + (a.telefone || '') + ' ' + (a.equipe || '')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  var lst = document.getElementById('atleta-list');
+  if (!aths.length) {
+    lst.innerHTML = '<div class="empty"><div class="empty-icon">👥</div><div>Nenhum atleta neste evento.<br>Vá em Importar para adicionar.</div></div>';
+    return;
+  }
+  if (!filtered.length) {
+    lst.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><div>Nenhum resultado.</div></div>';
+    return;
+  }
+
+  var statusColors = { lead:'var(--mut2)', inscrito:'var(--blu)', confirmado:'var(--gold)', retirou:'var(--grn)' };
+  lst.innerHTML = filtered.slice(0, 200).map(function(a) {
+    var initials = (a.nome || '?').split(' ').map(function(n) { return n[0] || ''; }).slice(0,2).join('').toUpperCase();
+    var isFem = a.sexo === 'F';
+    var scColor = statusColors[a.status || 'inscrito'] || 'var(--mut2)';
+    return '<div class="ath" onclick="abrirAtleta(\'' + a.id + '\')">'
+      + '<div class="ath-av ' + (isFem ? 'av-f' : 'av-m') + '">' + initials + '</div>'
+      + '<div class="ath-info">'
+      + '<div class="ath-name">' + (a.nome || 'Sem nome') + '</div>'
+      + '<div class="ath-sub">'
+      + (a.tamanho ? '👕 ' + a.tamanho + ' · ' : '')
+      + (a.percurso || '') + (a.percurso && a.cidade ? ' · ' : '')
+      + (a.cidade || '')
+      + (a.equipe ? ' · 🏃 ' + a.equipe.substring(0,14) : '')
+      + '</div>'
+      + '</div>'
+      + '<div class="ath-right">'
+      + '<div class="sz-badge">' + (a.tamanho || '') + '</div>'
+      + '<div class="pago-dot" style="background:' + (a.pago === 'sim' ? 'var(--grn)' : 'var(--red)') + '"></div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  if (filtered.length > 200) {
+    lst.innerHTML += '<div style="text-align:center;padding:10px;font-size:11px;color:var(--mut)">...e mais ' + (filtered.length - 200) + ' atletas</div>';
+  }
+}
+
+function abrirAtleta(id) {
+  var aths = getAtletas();
+  var a = aths.find(function(x) { return x.id === id; });
+  if (!a) return;
+
+  var tel = (a.telefone || '').replace(/\D/g, '');
+  var ev = getEvAtivo();
+
+  document.getElementById('modal-ath-content').innerHTML =
+    '<div style="text-align:center;margin-bottom:14px">'
+    + '<div class="ath-av ' + (a.sexo === 'F' ? 'av-f' : 'av-m') + '" style="width:54px;height:54px;font-size:20px;margin:0 auto 8px;border-radius:12px">'
+    + (a.nome || '?').split(' ').map(function(n){return n[0]||'';}).slice(0,2).join('').toUpperCase()
+    + '</div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;letter-spacing:1px">' + (a.nome || 'Sem nome') + '</div>'
+    + '</div>'
+
+    + '<div class="detail-grid">'
+    + detCell('Tamanho', a.tamanho || '—')
+    + detCell('Sexo', a.sexo === 'F' ? '♀ Fem' : '♂ Masc')
+    + detCell('Cidade', a.cidade || '—')
+    + detCell('Percurso', a.percurso || '—')
+    + '</div>'
+
+    + (a.nasc ? '<div style="font-size:12px;color:var(--mut);margin-bottom:5px">🎂 ' + fmtData(a.nasc) + (a.categoria ? ' · ' + a.categoria : '') + '</div>' : '')
+    + (a.telefone ? '<div style="font-size:12px;color:var(--mut);margin-bottom:5px">📞 ' + a.telefone + '</div>' : '')
+    + (a.email ? '<div style="font-size:12px;color:var(--mut);margin-bottom:5px">✉️ ' + a.email + '</div>' : '')
+    + (a.equipe ? '<div style="font-size:12px;color:var(--mut);margin-bottom:5px">🏃 ' + a.equipe + '</div>' : '')
+
+    + '<div class="div"></div>'
+
+    + '<div style="display:flex;gap:7px;margin-bottom:7px">'
+    + '<div style="flex:1"><label class="inp-label">Status</label>'
+    + '<select class="inp" style="padding:9px" onchange="updAtleta(\'' + id + '\',\'status\',this.value)">'
+    + '<option value="inscrito"' + (a.status==='inscrito'?' selected':'') + '>Inscrito</option>'
+    + '<option value="confirmado"' + (a.status==='confirmado'?' selected':'') + '>Confirmado</option>'
+    + '<option value="retirou"' + (a.status==='retirou'?' selected':'') + '>Retirou Kit</option>'
+    + '<option value="lead"' + (a.status==='lead'?' selected':'') + '>Lead</option>'
+    + '</select></div>'
+    + '<div style="flex:1"><label class="inp-label">Pagamento</label>'
+    + '<select class="inp" style="padding:9px" onchange="updAtleta(\'' + id + '\',\'pago\',this.value)">'
+    + '<option value="sim"' + (a.pago==='sim'?' selected':'') + '>✅ Pago</option>'
+    + '<option value="nao"' + (a.pago!=='sim'?' selected':'') + '>⚠️ Pendente</option>'
+    + '</select></div>'
+    + '</div>'
+
+    + (tel.length >= 10
+      ? '<a href="https://wa.me/55' + tel + '" target="_blank" class="btn btn-wa" style="margin-bottom:7px;text-decoration:none">💬 ABRIR WHATSAPP</a>'
+      : '<div style="font-size:11px;color:var(--mut2);text-align:center;margin-bottom:7px">📵 Sem telefone</div>')
+
+    + '<button class="btn btn-red btn-sm" style="width:100%;padding:9px;margin-top:2px" onclick="excluirAtleta(\'' + id + '\')">🗑️ Excluir Atleta</button>';
+
+  openModal('modal-ath');
+}
+
+function detCell(label, val) {
+  return '<div class="detail-cell"><div class="detail-cell-l">' + label + '</div><div class="detail-cell-v">' + val + '</div></div>';
+}
+
+function updAtleta(id, field, val) {
+  var aths = getAtletas();
+  var a = aths.find(function(x) { return x.id === id; });
+  if (!a) return;
+  a[field] = val;
+  setAtletas(aths);
+  salvar();
+  renderAtletas();
+  renderDash();
+  toast('✅ Atualizado!');
+}
+
+function excluirAtleta(id) {
+  confirmar('🗑️', 'Excluir este atleta?', function() {
+    setAtletas(getAtletas().filter(function(x) { return x.id !== id; }));
+    salvar(); closeModal('modal-ath');
+    renderAtletas(); renderDash();
+    toast('🗑️ Atleta removido.');
+  });
+}
+
+// ══════════════════════════════════════════
+//  IMPORTAR
+// ══════════════════════════════════════════
+var _headers = [], _rows = [], _autoMap = {};
+
+function checkImportWarn() {
+  var warn = document.getElementById('import-ev-warn');
+  warn.style.display = getEvAtivo() ? 'none' : 'block';
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  var file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+
+function handleFile(e) {
+  var file = e.target.files[0];
+  if (file) processFile(file);
+  e.target.value = '';
+}
+
+function processFile(file) {
+  if (!getEvAtivo()) {
+    toast('⚠️ Ative um evento primeiro!');
+    nav('pg-eventos');
+    return;
+  }
+  var ext = file.name.split('.').pop().toLowerCase();
+  document.getElementById('import-loading').style.display = 'block';
+  document.getElementById('map-card').style.display = 'none';
+  document.getElementById('import-done').style.display = 'none';
+
+  if (ext === 'csv') {
+    var reader = new FileReader();
+    reader.onload = function(e) { parseCSV(e.target.result); };
+    reader.onerror = function() { toast('❌ Erro ao ler arquivo.'); document.getElementById('import-loading').style.display = 'none'; };
+    reader.readAsText(file, 'UTF-8');
+  } else {
+    loadXLSX(function() { parseExcel(file); });
+  }
+}
+
+function loadXLSX(cb) {
+  if (window.XLSX) { cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload = cb;
+  s.onerror = function() { toast('❌ Falha ao carregar leitor de Excel. Verifique sua conexão.'); document.getElementById('import-loading').style.display = 'none'; };
+  document.head.appendChild(s);
+}
+
+function parseExcel(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var wb = XLSX.read(new Uint8Array(e.target.result), { type:'array', raw:false });
+      var ws = wb.Sheets[wb.SheetNames[0]];
+      var raw = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
+      // Find header row (first row with 3+ non-empty cells)
+      var hrIdx = 0;
+      for (var i = 0; i < Math.min(10, raw.length); i++) {
+        var filled = raw[i].filter(function(c) { return String(c).trim(); }).length;
+        if (filled >= 3) { hrIdx = i; break; }
+      }
+      _headers = raw[hrIdx].map(function(h) { return String(h).trim(); });
+      _rows = raw.slice(hrIdx + 1).filter(function(r) {
+        return r.some(function(c) { return String(c).trim(); });
+      }).map(function(r) {
+        var obj = {};
+        _headers.forEach(function(h, i) { obj[h] = String(r[i] != null ? r[i] : '').trim(); });
+        return obj;
+      });
+      finalizarLeitura();
+    } catch (err) {
+      toast('❌ Erro ao ler Excel: ' + err.message);
+      document.getElementById('import-loading').style.display = 'none';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseCSV(text) {
+  try {
+    // Detect delimiter
+    var firstLine = text.split('\n')[0];
+    var sep = (firstLine.split(';').length > firstLine.split(',').length) ? ';' : ',';
+
+    var lines = text.split(/\r?\n/).filter(function(l) { return l.trim(); });
+    if (lines.length < 2) { toast('❌ CSV vazio ou inválido.'); document.getElementById('import-loading').style.display = 'none'; return; }
+
+    function parseCSVLine(line) {
+      var result = [], cur = '', inQ = false;
+      for (var i = 0; i < line.length; i++) {
+        var c = line[i];
+        if (c === '"') { inQ = !inQ; }
+        else if (c === sep && !inQ) { result.push(cur.trim()); cur = ''; }
+        else { cur += c; }
+      }
+      result.push(cur.trim());
+      return result;
+    }
+
+    _headers = parseCSVLine(lines[0]).map(function(h) { return h.replace(/^\uFEFF/, '').trim(); });
+    _rows = lines.slice(1).map(function(l) {
+      var vals = parseCSVLine(l);
+      var obj = {};
+      _headers.forEach(function(h, i) { obj[h] = (vals[i] || '').trim(); });
+      return obj;
+    }).filter(function(r) {
+      return Object.values(r).some(function(v) { return v; });
+    });
+
+    finalizarLeitura();
+  } catch (err) {
+    toast('❌ Erro ao ler CSV: ' + err.message);
+    document.getElementById('import-loading').style.display = 'none';
+  }
+}
+
+function finalizarLeitura() {
+  document.getElementById('import-loading').style.display = 'none';
+  if (!_rows.length) { toast('⚠️ Planilha vazia.'); return; }
+  _autoMap = autoDetect(_headers, _rows);
+  renderColMap();
+  document.getElementById('map-card').style.display = 'block';
+  toast('📊 ' + _rows.length + ' linhas lidas! Configure o mapeamento.');
+}
+
+function autoDetect(headers, rows) {
+  var map = {};
+  var norm = function(s) {
+    return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\s_\-\.\/\(\)]/g, '');
+  };
+
+  var fields = {
+    nome:     ['nomecompleto','nome','name','atleta','participante','corredor','nomeatleta'],
+    telefone: ['telefone','celular','whatsapp','phone','fone','tel'],
+    email:    ['email','e-mail','mail'],
+    nasc:     ['datadenascimento','datanascimento','nascimento','nasc','dob','datanasc','aniversario'],
+    cidade:   ['cidade','city','municipio','local'],
+    estado:   ['estado','uf','state'],
+    sexo:     ['sexo','genero','gender','sex'],
+    tamanho:  ['tamanho','camiseta','camisa','shirt','size','tam','tamanhodacamiseta'],
+    percurso: ['percurso','modalidade','prova','distancia','km'],
+    equipe:   ['equipe','team','assessoria','clube'],
+    status:   ['statusdainscricao','statusinscricao','status','situacao'],
+    pago:     ['pagamento','pago','payment','paid'],
+    kit:      ['kitescolhido','kit','kitchoice']
+  };
+
+  var usedHeaders = {};
+  Object.keys(fields).forEach(function(field) {
+    headers.forEach(function(h) {
+      if (usedHeaders[h]) return;
+      var hn = norm(h);
+      if (fields[field].some(function(a) { return hn === a || hn.includes(norm(a)); })) {
+        if (!map[field]) { map[field] = h; usedHeaders[h] = true; }
+      }
+    });
+  });
+  return map;
+}
+
+function renderColMap() {
+  var fields = [
+    { key:'nome',     label:'👤 Nome' },
+    { key:'telefone', label:'📞 Telefone' },
+    { key:'email',    label:'✉️ Email' },
+    { key:'nasc',     label:'🎂 Nascimento' },
+    { key:'cidade',   label:'🏙️ Cidade' },
+    { key:'estado',   label:'🗺️ Estado' },
+    { key:'sexo',     label:'⚥ Sexo' },
+    { key:'tamanho',  label:'👕 Tamanho' },
+    { key:'percurso', label:'🏃 Percurso/Modalidade' },
+    { key:'equipe',   label:'🤝 Equipe' },
+    { key:'status',   label:'📋 Status Inscrição' },
+    { key:'pago',     label:'💰 Pagamento' },
+    { key:'kit',      label:'📦 Kit Escolhido' }
+  ];
+
+  document.getElementById('col-map').innerHTML = fields.map(function(f) {
+    var sel = _autoMap[f.key] || '';
+    return '<div class="col-row"><div class="col-label">' + f.label + '</div>'
+      + '<select id="map-' + f.key + '">'
+      + '<option value="">— Não mapear —</option>'
+      + _headers.map(function(h) {
+        return '<option value="' + h + '"' + (h === sel ? ' selected' : '') + '>' + h.substring(0,22) + '</option>';
+      }).join('')
+      + '</select></div>';
+  }).join('');
+}
+
+function getMapVal(field) {
+  var el = document.getElementById('map-' + field);
+  return el ? el.value : '';
+}
+
+function normSexo(v) {
+  if (!v) return 'M';
+  var l = v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  return (l[0] === 'f' || l.includes('fem')) ? 'F' : 'M';
+}
+
+function normPago(v) {
+  if (!v) return 'nao';
+  var l = v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if (l.includes('pend') || l.includes('aguard') || l === 'nao' || l === '0' || l === 'false' || l === 'n') return 'nao';
+  if (l.includes('receiv') || l.includes('pago') || l.includes('confirm') || l.includes('aprovad') || l === 'sim' || l === '1' || l === 'true') return 'sim';
+  return 'nao';
+}
+
+function normData(v) {
+  if (!v) return '';
+  var s = String(v).trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
+  var br = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (br) return br[3] + '-' + br[2].padStart(2,'0') + '-' + br[1].padStart(2,'0');
+  return '';
+}
+
+function normTamanho(v) {
+  if (!v) return '';
+  var raw = String(v).trim().toUpperCase();
+  // Extract from long strings like "Kit Ouro (camiseta Tamanho M)"
+  var match = raw.match(/\b(PP|GG|XG|[PMGP])\b/);
+  if (match) {
+    var t = match[1];
+    if (['PP','P','M','G','GG','XG'].indexOf(t) >= 0) return t;
+  }
+  // Direct
+  if (['PP','P','M','G','GG','XG'].indexOf(raw) >= 0) return raw;
+  return '';
+}
+
+function normTelefone(v) {
+  if (!v) return '';
+  var d = String(v).replace(/\D/g,'');
+  return d.length >= 8 ? d : '';
+}
+
+function calcCat(nasc, sexo) {
+  if (!nasc) return '';
+  var yr = parseInt((nasc || '').split('-')[0]);
+  if (!yr) return '';
+  var age = new Date().getFullYear() - yr;
+  var s = sexo === 'F' ? 'F' : 'M';
+  if (age < 18) return 'Sub-18 ' + s;
+  if (age < 30) return '18-29 ' + s;
+  if (age < 40) return '30-39 ' + s;
+  if (age < 50) return '40-49 ' + s;
+  if (age < 60) return '50-59 ' + s;
+  return '60+ ' + s;
+}
+
+function importar() {
+  var ev = getEvAtivo();
+  if (!ev) { toast('⚠️ Nenhum evento ativo!'); return; }
+
+  var nomeCol     = getMapVal('nome');
+  var telCol      = getMapVal('telefone');
+  var emailCol    = getMapVal('email');
+  var nascCol     = getMapVal('nasc');
+  var cidadeCol   = getMapVal('cidade');
+  var estadoCol   = getMapVal('estado');
+  var sexoCol     = getMapVal('sexo');
+  var tamCol      = getMapVal('tamanho');
+  var percursoCol = getMapVal('percurso');
+  var equipeCol   = getMapVal('equipe');
+  var statusCol   = getMapVal('status');
+  var pagoCol     = getMapVal('pago');
+  var kitCol      = getMapVal('kit');
+
+  var defCity = (document.getElementById('def-city').value || '').trim();
+
+  var added = 0, skipped = 0;
+  var existing = ev.atletas || [];
+
+  _rows.forEach(function(row, idx) {
+    var nome = nomeCol ? row[nomeCol] : '';
+    var tel  = telCol  ? row[telCol]  : '';
+    if (!nome.trim() && !tel.trim()) { skipped++; return; }
+
+    // Resolve tamanho: prefer direct column, fallback to kit field
+    var tam = '';
+    if (tamCol) tam = normTamanho(row[tamCol]);
+    if (!tam && kitCol) tam = normTamanho(row[kitCol]);
+
+    // Resolve pago from status or pago columns
+    var pagoVal = 'nao';
+    if (pagoCol) pagoVal = normPago(row[pagoCol]);
+    else if (statusCol) {
+      var sv = (row[statusCol] || '').toLowerCase();
+      if (sv.includes('receiv') || sv.includes('pago') || sv.includes('confirm')) pagoVal = 'sim';
+    }
+
+    var nasc = normData(nascCol ? row[nascCol] : '');
+    var sexo = normSexo(sexoCol ? row[sexoCol] : '');
+    var cidade = (cidadeCol ? row[cidadeCol] : '') || defCity;
+
+    // Resolve status
+    var statusVal = 'inscrito';
+    if (statusCol) {
+      var sv = (row[statusCol] || '').toLowerCase();
+      if (sv.includes('retir') || sv.includes('kit')) statusVal = 'retirou';
+      else if (sv.includes('confirm')) statusVal = 'confirmado';
+    }
+
+    existing.push({
+      id: 'a_' + Date.now() + '_' + idx + '_' + Math.random().toString(36).slice(2,6),
+      nome: nome.trim(),
+      telefone: normTelefone(tel),
+      email: emailCol ? row[emailCol] : '',
+      nasc: nasc,
+      cidade: cidade.trim(),
+      estado: estadoCol ? row[estadoCol] : '',
+      sexo: sexo,
+      tamanho: tam,
+      percurso: percursoCol ? row[percursoCol] : '',
+      equipe: equipeCol ? row[equipeCol] : '',
+      status: statusVal,
+      pago: pagoVal,
+      categoria: calcCat(nasc, sexo),
+      kitRetirado: false,
+      criado: new Date().toISOString()
+    });
+    added++;
+  });
+
+  ev.atletas = existing;
+  salvar();
+
+  document.getElementById('map-card').style.display = 'none';
+  var doneEl = document.getElementById('import-done');
+  doneEl.style.display = 'block';
+  doneEl.innerHTML = '<div class="card" style="border-color:var(--grn)">'
+    + '<div style="color:var(--grn);font-weight:700;font-size:14px;margin-bottom:4px">✅ ' + added + ' atletas importados!</div>'
+    + (skipped ? '<div style="font-size:11px;color:var(--mut)">' + skipped + ' linhas vazias ignoradas</div>' : '')
+    + '<button class="btn btn-gold" style="margin-top:10px;padding:9px" onclick="nav(\'pg-atletas\');renderDash();renderAtletas()">Ver Atletas →</button>'
+    + '</div>';
+
+  toast('✅ ' + added + ' atletas importados!', 3000);
+  _rows = []; _headers = [];
+}
+
+// ══════════════════════════════════════════
+//  WHATSAPP
+// ══════════════════════════════════════════
+var _loteTam = 10, _loteIdx = 0, _loteLista = [];
+
+function setLote(n, btn) {
+  _loteTam = n;
+  document.querySelectorAll('#lote-chips .chip').forEach(function(c) { c.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+function prepararLote() {
+  var msg = (document.getElementById('wa-msg').value || '').trim();
+  if (!msg) { toast('⚠️ Escreva uma mensagem!'); return; }
+
+  var filtro = document.getElementById('wa-filtro').value;
+  var aths = getAtletas();
+
+  _loteLista = aths.filter(function(a) {
+    var tel = (a.telefone || '').replace(/\D/g,'');
+    if (tel.length < 10) return false;
+    if (filtro === 'nao_pago' && a.pago === 'sim') return false;
+    if (filtro === 'pago' && a.pago !== 'sim') return false;
+    if (filtro === 'sem_kit' && a.kitRetirado) return false;
+    return true;
+  });
+
+  _loteIdx = 0;
+
+  document.getElementById('wa-info').style.display = 'block';
+  document.getElementById('wa-info').innerHTML = '<div class="card"><div style="font-size:12px;color:var(--mut);margin-bottom:8px">📋 <strong style="color:var(--txt)">' + _loteLista.length + '</strong> atletas com telefone · Lote: ' + _loteTam + '</div>'
+    + '<button class="btn btn-green" onclick="enviarProximoLote()">📤 Enviar Próximo Lote</button></div>';
+
+  renderLote();
+}
+
+function enviarProximoLote() {
+  _loteIdx += _loteTam;
+  if (_loteIdx >= _loteLista.length) {
+    toast('✅ Todos os lotes enviados!');
+    document.getElementById('wa-info').style.display = 'none';
+    document.getElementById('wa-queue').style.display = 'none';
+    return;
+  }
+  renderLote();
+  toast('📤 Próximo lote: ' + (_loteIdx + 1) + ' - ' + Math.min(_loteIdx + _loteTam, _loteLista.length));
+}
+
+function renderLote() {
+  var msg = document.getElementById('wa-msg').value;
+  var slice = _loteLista.slice(_loteIdx, _loteIdx + _loteTam);
+  var ev = getEvAtivo();
+
+  document.getElementById('wa-queue').style.display = 'block';
+  document.getElementById('wa-queue').innerHTML = '<div style="font-size:11px;color:var(--mut);margin-bottom:8px;font-weight:700">'
+    + 'Lote ' + Math.floor(_loteIdx / _loteTam + 1) + ' · itens ' + (_loteIdx + 1) + '–' + (_loteIdx + slice.length)
+    + '</div>'
+    + slice.map(function(a, i) {
+      var tel = a.telefone.replace(/\D/g,'');
+      var texto = interpolar(msg, a, ev);
+      return '<div class="wa-item"><div class="wa-num">' + (_loteIdx + i + 1) + '</div>'
+        + '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + a.nome + '</div>'
+        + '<div style="font-size:10px;color:var(--mut)">' + tel + (a.cidade ? ' · ' + a.cidade : '') + '</div></div>'
+        + '<a href="https://wa.me/55' + tel + '?text=' + encodeURIComponent(texto) + '" target="_blank" style="background:#128C7E;color:#fff;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;text-decoration:none;flex-shrink:0">WA</a>'
+        + '</div>';
+    }).join('');
+}
+
+function interpolar(msg, a, ev) {
+  return msg
+    .replace(/\{nome\}/gi, a.nome || 'Atleta')
+    .replace(/\{evento\}/gi, ev ? ev.nome : 'evento')
+    .replace(/\{cidade\}/gi, a.cidade || (ev ? ev.cidade : '') || '')
+    .replace(/\{tamanho\}/gi, a.tamanho || '')
+    .replace(/\{percurso\}/gi, a.percurso || '');
+}
+
+// ══════════════════════════════════════════
+//  UTILITÁRIOS
+// ══════════════════════════════════════════
+function fmtData(d) {
+  if (!d) return '';
+  var p = String(d).split('-');
+  if (p.length === 3) return p[2] + '/' + p[1] + '/' + p[0];
+  return d;
+}
+
+function fmtMoney(v) {
+  return parseFloat(v || 0).toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+
+function setText(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+// ══════════════════════════════════════════
+//  INICIALIZAÇÃO
+// ══════════════════════════════════════════
+atualizarHeader();
+renderEventos();
+</script>
+</body>
+</html>
