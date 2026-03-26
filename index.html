@@ -1,0 +1,2160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Fera Esportes</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f1117;--bg2:#161b25;--surf:#1c2230;--surf2:#232c3b;
+  --brd:#2a3347;--brd2:#334060;
+  --gold:#f0a500;--gdim:rgba(240,165,0,.12);
+  --txt:#e8eaf0;--mut:#7a8499;--mut2:#4a5568;
+  --grn:#22c55e;--red:#ef4444;--blu:#3b82f6;--pur:#a855f7;
+  --sh:0 4px 20px rgba(0,0,0,.4)
+}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;overflow-x:hidden}
+body{max-width:430px;margin:0 auto}
+
+.hdr{position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--brd);padding:0 14px;height:52px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px)}
+.brand-logo{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:2px;color:var(--gold)}
+.brand-sub{font-size:9px;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;margin-top:-2px}
+.hdr-ev{font-size:11px;color:var(--mut);max-width:130px;text-align:right;overflow:hidden}
+.hdr-ev b{color:var(--gold);display:block;font-size:12px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.hdr-sync{background:none;border:1px solid var(--brd2);border-radius:7px;padding:5px 9px;color:var(--mut);font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s}
+.hdr-sync.syncing{border-color:var(--blu);color:var(--blu)}
+.hdr-sync.synced{border-color:var(--grn);color:var(--grn)}
+.hdr-sync.error{border-color:var(--red);color:var(--red)}
+.hdr-sync.offline{border-color:#f59e0b;color:#f59e0b}
+.hdr-sync.pending{border-color:var(--pur);color:var(--pur)}
+
+/* OFFLINE BANNER */
+.offline-banner{display:none;position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:49;background:#1a1200;border:1px solid #f59e0b;border-top:none;border-radius:0 0 10px 10px;padding:5px 16px;font-size:11px;font-weight:700;color:#f59e0b;letter-spacing:.3px;max-width:430px;width:100%;text-align:center}
+.offline-banner.on{display:block}
+
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--bg2);border-top:1px solid var(--brd);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;padding:9px 2px 6px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--mut2);transition:color .2s;font-family:'DM Sans',sans-serif;position:relative}
+nav button.on{color:var(--gold)}
+nav button .ic{font-size:18px}
+nav button .lb{font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+nav button.on::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:22px;height:2px;background:var(--gold);border-radius:2px 2px 0 0}
+
+.page{display:none;padding:13px 13px 88px;animation:fadeIn .2s ease}
+.page.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:13px;margin-bottom:10px}
+.card-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:11px;display:flex;align-items:center;justify-content:space-between}
+
+/* EVENT CARD */
+.ev-card{background:var(--surf);border:1px solid var(--brd);border-radius:13px;margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.ev-card.active-ev{border-color:var(--gold);box-shadow:0 0 0 1px var(--gdim)}
+.ev-banner{width:100%;height:160px;object-fit:cover;background:var(--surf2);display:block}
+.ev-banner-placeholder{width:100%;height:100px;background:linear-gradient(135deg,var(--surf2),var(--bg2));display:flex;align-items:center;justify-content:center;font-size:40px}
+.ev-banner-wrap{position:relative;overflow:hidden}
+.ev-banner-wrap::after{content:'';position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(to top,rgba(15,17,23,.92) 0%,transparent 100%)}
+.ev-body{padding:12px}
+.ev-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;line-height:1.1;margin-bottom:4px}
+.ev-badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.5px;text-transform:uppercase}
+.badge-active{background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3)}
+.badge-done{background:rgba(122,132,153,.12);color:var(--mut);border:1px solid var(--brd)}
+.badge-ev{background:var(--gdim);color:var(--gold);border:1px solid rgba(240,165,0,.25)}
+.ev-meta{font-size:11px;color:var(--mut);display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.ev-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stat{background:var(--surf);border:1px solid var(--brd);border-radius:10px;padding:12px 12px 10px}
+.stat-v{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;color:var(--gold)}
+.stat-v.blue{color:var(--blu)}.stat-v.green{color:var(--grn)}.stat-v.red{color:var(--red)}
+.stat-l{font-size:10px;color:var(--mut);margin-top:2px;font-weight:500}
+
+/* BUTTONS */
+.btn{display:block;width:100%;padding:11px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-align:center;letter-spacing:.2px;transition:opacity .15s,transform .1s}
+.btn:active{opacity:.8;transform:scale(.98)}
+.btn-gold{background:var(--gold);color:#0f1117}
+.btn-dark{background:var(--surf2);border:1px solid var(--brd2);color:var(--txt)}
+.btn-green{background:#16a34a;color:#fff}
+.btn-red{background:#b91c1c;color:#fff}
+.btn-blue{background:#1d4ed8;color:#fff}
+.btn-wa{background:#128C7E;color:#fff;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn-sm{padding:6px 11px;font-size:11px;border-radius:8px;display:inline-flex;align-items:center;gap:4px;width:auto}
+
+/* INPUTS */
+.inp-wrap{margin-bottom:10px}
+.inp-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mut);margin-bottom:4px;display:block}
+.inp{width:100%;padding:10px 12px;background:var(--surf);border:1px solid var(--brd2);border-radius:9px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--gold)}
+.inp::placeholder{color:var(--mut2)}
+.inp:disabled{opacity:.5;cursor:not-allowed}
+select.inp{cursor:pointer}
+.inp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* SEARCH */
+.search-wrap{display:flex;align-items:center;gap:8px;background:var(--surf);border:1px solid var(--brd);border-radius:10px;padding:9px 12px;margin-bottom:10px}
+.search-wrap span{font-size:14px;color:var(--mut)}
+.search-wrap input{flex:1;background:none;border:none;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
+.search-wrap input::placeholder{color:var(--mut2)}
+
+/* FILTERS */
+.filters{display:flex;gap:5px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{height:2px}
+.chip{background:var(--surf);border:1px solid var(--brd);border-radius:20px;padding:5px 11px;font-size:11px;font-weight:600;color:var(--mut);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.chip.on{background:var(--gold);color:#0f1117;border-color:var(--gold)}
+
+/* ATHLETE */
+.ath{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surf);border:1px solid var(--brd);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:border-color .2s}
+.ath:active{border-color:var(--gold)}
+.ath-av{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:15px;flex-shrink:0;letter-spacing:1px}
+.av-m{background:rgba(59,130,246,.15);color:var(--blu)}
+.av-f{background:rgba(239,68,68,.12);color:var(--red)}
+.ath-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ath-sub{font-size:10px;color:var(--mut);margin-top:2px}
+.pago-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* KIT ITEM */
+.kit-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surf);border:1px solid var(--brd);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:border-color .2s}
+.kit-item:active{border-color:var(--gold)}
+.kit-item.kit-ok{border-left:3px solid var(--grn)}
+.kit-item.kit-pend{border-left:3px solid var(--brd2)}
+.kit-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;letter-spacing:.5px;text-transform:uppercase;flex-shrink:0}
+.kit-badge.ok{background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3)}
+.kit-badge.pend{background:rgba(122,132,153,.1);color:var(--mut);border:1px solid var(--brd)}
+
+/* KIT MODAL CONFIRMATION */
+.kit-conf-box{background:var(--surf2);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:12px}
+.kit-conf-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--brd)}
+.kit-conf-row:last-child{border-bottom:none}
+.kit-conf-lbl{font-size:11px;color:var(--mut);font-weight:600}
+.kit-conf-val{font-size:13px;font-weight:700;text-align:right}
+
+/* EXPORT AREA */
+.export-row{display:flex;gap:7px;margin-bottom:10px}
+.export-row .btn{padding:10px}
+
+/* MODAL */
+.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.modal.on{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--brd);border-radius:18px 18px 0 0;padding:20px 16px 24px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;color:var(--gold);margin-bottom:14px}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--surf2);border:1px solid var(--brd);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--mut);cursor:pointer;font-size:14px}
+
+/* TOAST */
+.toast{position:fixed;top:62px;left:50%;transform:translateX(-50%) translateY(-16px);z-index:200;background:var(--surf2);border:1px solid var(--brd2);color:var(--txt);padding:9px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--sh)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* IMPORT */
+.drop-zone{border:2px dashed var(--brd2);border-radius:12px;padding:26px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--gold);background:var(--gdim)}
+
+/* BARS */
+.bar-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.bar-lbl{font-size:11px;color:var(--mut);width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;background:var(--surf2);border-radius:4px;height:15px;overflow:hidden}
+.bar-fill{height:15px;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;min-width:18px}
+.bar-num{font-size:10px;font-weight:700;color:#fff;padding-right:5px;font-family:'JetBrains Mono',monospace}
+
+/* WA TEMPLATE */
+.tpl{background:var(--surf2);border:1px solid var(--brd);border-radius:10px;padding:10px 12px;margin-bottom:7px;cursor:pointer;transition:border-color .2s}
+.tpl:active{border-color:var(--gold)}
+.tpl-tag{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
+.tpl-preview{font-size:11px;color:var(--mut);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* WA QUEUE */
+.wa-item{background:var(--surf2);border:1px solid var(--brd);border-radius:9px;padding:9px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.wa-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mut);width:20px;flex-shrink:0}
+
+/* SYNC / FIREBASE */
+.sync-code{width:100%;background:var(--surf);border:1px solid var(--brd2);border-radius:9px;padding:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mut);height:80px;resize:none;outline:none;word-break:break-all}
+.firebase-status{display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:9px;font-size:12px;font-weight:600;margin-bottom:10px}
+.firebase-status.on{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--grn)}
+.firebase-status.off{background:rgba(122,132,153,.08);border:1px solid var(--brd);color:var(--mut)}
+
+/* DETAIL */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.detail-cell{background:var(--surf2);border-radius:8px;padding:10px}
+.detail-cell-l{font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;font-weight:700}
+.detail-cell-v{font-weight:700;font-size:13px}
+
+/* SCRAPE */
+.scrape-item{background:var(--surf2);border:1px solid var(--brd);border-radius:10px;overflow:hidden;margin-bottom:8px}
+.scrape-banner{width:100%;height:90px;object-fit:cover;background:var(--surf);display:block}
+.scrape-body{padding:10px}
+.scrape-name{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.8px;margin-bottom:3px}
+.scrape-meta{font-size:11px;color:var(--mut);margin-bottom:8px}
+.scrape-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+.loading{display:flex;flex-direction:column;align-items:center;padding:24px;gap:10px}
+.spin{width:26px;height:26px;border:3px solid var(--brd);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:32px 16px;color:var(--mut)}
+.empty-icon{font-size:38px;margin-bottom:10px}
+.div{height:1px;background:var(--brd);margin:12px 0}
+.confirm-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+
+/* STATUS TOGGLE */
+.status-toggle{display:flex;gap:6px}
+.status-btn{flex:1;padding:8px;border:1px solid var(--brd2);border-radius:8px;background:var(--surf2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;text-align:center;transition:all .15s}
+.status-btn.sel-active{border-color:var(--grn);background:rgba(34,197,94,.1);color:var(--grn)}
+.status-btn.sel-done{border-color:var(--mut);background:rgba(122,132,153,.08);color:var(--mut)}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div>
+    <div class="brand-logo">⚡ FERA</div>
+    <div class="brand-sub">Esportes</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="hdr-sync" id="hdr-sync-btn" onclick="openModal('modal-sync')">☁️ Sync</button>
+    <div class="hdr-ev" id="hdr-ev-info">
+      <span style="color:var(--mut2);font-size:11px">Nenhum evento</span>
+    </div>
+  </div>
+</header>
+
+<div class="offline-banner" id="offline-banner">📵 Sem conexão — alterações salvas localmente e sincronizarão ao voltar online</div>
+<div class="toast" id="toast"></div>
+
+<!-- ═══ EVENTOS ═══ -->
+<div class="page on" id="pg-eventos">
+
+  <!-- Seus eventos (aparece PRIMEIRO) -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mut)" id="ev-count-label">Seus eventos</div>
+    <button class="btn btn-gold btn-sm" onclick="abrirModalEvento(null)">+ Novo</button>
+  </div>
+  <div id="ev-list">
+    <div class="empty"><div class="empty-icon">📅</div><div>Nenhum evento.<br>Adicione manualmente ou busque no site abaixo.</div></div>
+  </div>
+
+  <!-- Buscar no site (recolhido por padrão) -->
+  <div style="margin-top:6px">
+    <button class="btn btn-dark" style="padding:10px;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px;width:100%" onclick="toggleScrape(this)">
+      🌐 <span>Buscar eventos no site</span> <span id="scrape-arrow" style="margin-left:4px;font-size:10px">▼</span>
+    </button>
+    <div id="scrape-panel" style="display:none;margin-top:8px">
+      <button class="btn btn-gold" style="padding:11px;margin-bottom:8px" onclick="buscarEventosSite()">🔄 Buscar Eventos do Site</button>
+      <div id="scrape-status" style="display:none;margin-top:10px"></div>
+      <div id="scrape-results"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ATLETAS ═══ -->
+<div class="page" id="pg-atletas">
+  <div class="search-wrap">
+    <span>🔍</span>
+    <input type="text" id="busca" placeholder="Nome, cidade, telefone, equipe..." oninput="renderAtletas()">
+  </div>
+  <div class="filters" id="filtros">
+    <button class="chip on" onclick="setFiltro('todos',this)">Todos</button>
+    <button class="chip" onclick="setFiltro('M',this)">♂ Masc</button>
+    <button class="chip" onclick="setFiltro('F',this)">♀ Fem</button>
+    <button class="chip" onclick="setFiltro('nao_pago',this)">⚠️ Não Pago</button>
+    <button class="chip" onclick="setFiltro('pago',this)">✅ Pago</button>
+    <button class="chip" onclick="setFiltro('sem_tel',this)">📵 Sem Tel</button>
+  </div>
+  <div id="dash-stats" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="stat-v" id="s-total">0</div><div class="stat-l">Total</div></div>
+      <div class="stat"><div class="stat-v blue" id="s-cidades">0</div><div class="stat-l">Cidades</div></div>
+      <div class="stat"><div class="stat-v" id="s-masc">0</div><div class="stat-l">Masculino</div></div>
+      <div class="stat"><div class="stat-v red" id="s-fem">0</div><div class="stat-l">Feminino</div></div>
+    </div>
+    <div class="card"><div class="card-title">👕 Camisetas</div><div id="cam-bars"></div></div>
+    <div class="card"><div class="card-title">🏙️ Cidades</div><div id="city-bars"></div></div>
+    <div class="card"><div class="card-title">💰 Financeiro</div><div id="fin-info"></div></div>
+  </div>
+  <div id="atleta-list">
+    <div class="empty"><div class="empty-icon">👥</div><div>Selecione um evento e importe atletas.</div></div>
+  </div>
+</div>
+
+<!-- ═══ KITS ═══ -->
+<div class="page" id="pg-kits">
+  <div id="kits-no-ev" class="card" style="border-color:var(--gold);display:none">
+    <div style="color:var(--gold);font-size:12px;font-weight:600">⚠️ Nenhum evento ativo!<br><span style="color:var(--mut);font-weight:400">Selecione um evento primeiro.</span></div>
+    <button class="btn btn-gold" style="margin-top:10px;padding:9px" onclick="nav('pg-eventos')">Ir para Eventos</button>
+  </div>
+
+  <!-- Stats kits -->
+  <div class="stats" id="kit-stats" style="display:none">
+    <div class="stat"><div class="stat-v green" id="k-entregues">0</div><div class="stat-l">Entregues</div></div>
+    <div class="stat"><div class="stat-v red" id="k-pendentes">0</div><div class="stat-l">Pendentes</div></div>
+  </div>
+
+  <!-- Exportar -->
+  <div id="kit-export-area" style="display:none">
+    <div class="card">
+      <div class="card-title">📤 Exportar Lista de Retiradas</div>
+      <div class="export-row">
+        <button class="btn btn-red" onclick="exportarKitsPDF()" style="flex:1">📄 PDF Retiradas</button>
+        <button class="btn btn-green" onclick="exportarKitsExcel()" style="flex:1">📊 Excel Retiradas</button>
+      </div>
+      <div class="export-row" style="margin-top:0">
+        <button class="btn btn-dark" onclick="exportarTodosExcel()" style="flex:1;padding:9px;font-size:12px">📋 Exportar Todos os Participantes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Busca e filtro -->
+  <!-- Botoes de acao kits -->
+  <div id="kit-actions-area" style="display:none;margin-bottom:10px">
+    <button class="btn btn-gold" onclick="abrirModalAtletaManual()" style="padding:10px;font-size:12px">➕ Adicionar Participante Manual</button>
+  </div>
+  <div id="kit-busca-area" style="display:none">
+    <div class="search-wrap">
+      <span>🔍</span>
+      <input type="text" id="kit-busca" placeholder="Nome, percurso, tamanho..." oninput="renderKits()">
+    </div>
+    <div class="filters" id="kit-filtros">
+      <button class="chip on" onclick="setKitFiltro('todos',this)">Todos</button>
+      <button class="chip" onclick="setKitFiltro('pendente',this)">⏳ Pendentes</button>
+      <button class="chip" onclick="setKitFiltro('entregue',this)">✅ Entregues</button>
+    </div>
+  </div>
+
+  <div id="kit-list">
+    <div class="empty"><div class="empty-icon">🎽</div><div>Selecione um evento e importe atletas.</div></div>
+  </div>
+</div>
+
+<!-- ═══ IMPORTAR ═══ -->
+<div class="page" id="pg-importar">
+  <div id="import-ev-warn" class="card" style="border-color:var(--gold);display:none">
+    <div style="color:var(--gold);font-size:12px;font-weight:600">⚠️ Nenhum evento ativo!<br><span style="color:var(--mut);font-weight:400">Selecione um evento primeiro.</span></div>
+    <button class="btn btn-gold" style="margin-top:10px;padding:9px" onclick="nav('pg-eventos')">Ir para Eventos</button>
+  </div>
+  <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-in').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');handleDrop(event)">
+    <div style="font-size:34px;margin-bottom:8px">📊</div>
+    <div style="font-weight:700;font-size:14px;margin-bottom:4px">Toque para selecionar planilha</div>
+    <div style="font-size:11px;color:var(--mut)">Excel (.xlsx, .xls) ou CSV (.csv)</div>
+  </div>
+  <input type="file" id="file-in" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFile(event)">
+  <div id="import-loading" style="display:none"><div class="loading"><div class="spin"></div><div style="font-size:12px;color:var(--mut)">Lendo planilha...</div></div></div>
+  <div id="map-card" style="display:none">
+    <div class="card"><div class="card-title">🗂️ Mapeamento de Colunas</div><div id="col-map"></div></div>
+    <div style="margin-bottom:8px"><label class="inp-label">Cidade padrão (opcional)</label><input class="inp" id="def-city" placeholder="Ex: Paranavaí"></div>
+    <!-- Legenda de status -->
+    <div id="status-legend" style="display:none;background:var(--surf2);border:1px solid var(--brd);border-radius:9px;padding:10px 12px;margin-bottom:10px">
+      <div style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px">📋 Legenda — Status da Inscrição</div>
+      <div style="font-size:11px;line-height:1.8"><span style="color:var(--grn)">✅ Received</span> = Pago &nbsp;·&nbsp; <span style="color:var(--red)">⚠️ Aguardando Pagamento</span> = Não pago &nbsp;·&nbsp; <span style="color:var(--mut)">🔄 Checkout</span> = Não finalizado</div>
+    </div>
+    <button class="btn btn-gold" onclick="importar()">✅ IMPORTAR ATLETAS</button>
+  </div>
+  <div id="import-done" style="display:none;margin-top:12px"></div>
+</div>
+
+<!-- ═══ WHATSAPP ═══ -->
+<div class="page" id="pg-whatsapp">
+  <!-- Seletor de evento para link -->
+  <div class="card" id="wa-ev-picker">
+    <div class="card-title">🔗 Evento para divulgar <span style="font-size:10px;color:var(--mut);font-weight:400;text-transform:none;letter-spacing:0">link vai na variável {link}</span></div>
+    <select class="inp" id="wa-ev-link-sel" style="padding:9px;margin-bottom:7px" onchange="atualizarWaEvLink()">
+      <option value="">— Nenhum evento selecionado —</option>
+    </select>
+    <div id="wa-ev-link-preview" style="display:none;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;padding:8px 11px;font-size:11px;color:var(--mut);word-break:break-all"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📋 Templates Prontos <span style="font-size:10px;color:var(--mut);font-weight:400;text-transform:none;letter-spacing:0">toque para usar</span></div>
+    <div id="tpl-list"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">✏️ Mensagem</div>
+    <textarea id="wa-msg" class="inp" style="height:100px;resize:none" placeholder="Escreva ou escolha um template acima..."></textarea>
+    <div style="font-size:10px;color:var(--mut);margin-top:5px">Variáveis: {nome} {evento} {cidade} {tamanho} {percurso} <span style="color:var(--blu)">{link}</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">⚙️ Configurar Lote</div>
+    <div style="display:flex;gap:5px;margin-bottom:10px" id="lote-chips">
+      <button class="chip on" onclick="setLote(10,this)">10</button>
+      <button class="chip" onclick="setLote(25,this)">25</button>
+      <button class="chip" onclick="setLote(50,this)">50</button>
+      <button class="chip" onclick="setLote(100,this)">100</button>
+    </div>
+    <label class="inp-label">Filtrar destinatários</label>
+    <select class="inp" id="wa-filtro" style="padding:9px;margin-bottom:0">
+      <option value="todos">Todos com telefone</option>
+      <option value="nao_pago">Não pagos</option>
+      <option value="pago">Pagos</option>
+      <option value="sem_kit">Kit não retirado</option>
+    </select>
+  </div>
+  <button class="btn btn-gold" onclick="prepararLote()">🚀 PREPARAR LOTE</button>
+  <div id="wa-info" style="display:none;margin-top:10px"></div>
+  <div id="wa-queue" style="display:none;margin-top:10px"></div>
+</div>
+
+<!-- ═══ MODAL EVENTO ═══ -->
+<div class="modal" id="modal-ev">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-ev')">✕</button>
+    <div class="modal-title" id="modal-ev-title">Novo Evento</div>
+    <div class="inp-wrap"><label class="inp-label">Nome *</label><input class="inp" id="ev-nome" placeholder="Ex: Corrida das Rosas 2026"></div>
+    <div class="inp-row">
+      <div class="inp-wrap"><label class="inp-label">Data</label><input class="inp" id="ev-data" type="date"></div>
+      <div class="inp-wrap"><label class="inp-label">Cidade</label><input class="inp" id="ev-cidade" placeholder="Paranavaí"></div>
+    </div>
+    <div class="inp-wrap"><label class="inp-label">Valor Inscrição (R$)</label><input class="inp" id="ev-valor" type="number" placeholder="0.00" step="0.01"></div>
+    <div class="inp-wrap"><label class="inp-label">Status</label>
+      <div class="status-toggle" id="ev-status-toggle">
+        <button class="status-btn sel-active" id="st-ativo" onclick="setEvStatus('ativo')">🟢 Ativo</button>
+        <button class="status-btn" id="st-finalizado" onclick="setEvStatus('finalizado')">⚫ Finalizado</button>
+      </div>
+    </div>
+    <div class="inp-wrap"><label class="inp-label">Link do Resultado (opcional)</label><input class="inp" id="ev-link" placeholder="https://feraesportes.com.br/resultado..."></div>
+    <div style="display:flex;gap:7px;margin-top:4px">
+      <button class="btn btn-gold" style="flex:1" onclick="salvarEvento()">✅ Salvar</button>
+      <button class="btn btn-dark" style="flex:1" onclick="closeModal('modal-ev')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL ATLETA ═══ -->
+<div class="modal" id="modal-ath">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-ath')">✕</button>
+    <div id="modal-ath-content"></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL KIT ENTREGA ═══ -->
+<div class="modal" id="modal-kit">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-kit')">✕</button>
+    <div id="modal-kit-content"></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL CONFIRMAR ═══ -->
+<div class="modal" id="modal-confirm">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-confirm')">✕</button>
+    <div style="text-align:center">
+      <div id="confirm-icon" style="font-size:38px;margin-bottom:8px"></div>
+      <div id="confirm-msg" style="font-size:14px;color:var(--mut);line-height:1.5;margin-bottom:4px"></div>
+      <div class="confirm-btns">
+        <button class="btn btn-red" id="confirm-ok">Confirmar</button>
+        <button class="btn btn-dark" onclick="closeModal('modal-confirm')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL SYNC ═══ -->
+<div class="modal" id="modal-sync">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-sync')">✕</button>
+    <div class="modal-title">☁️ Sincronização</div>
+
+    <!-- Firebase Status -->
+    <div id="fb-status-bar" class="firebase-status off">
+      <span id="fb-status-icon">🔴</span>
+      <span id="fb-status-text">Firebase não configurado</span>
+    </div>
+
+    <!-- Firebase Config -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">🔥 Firebase Auto-Sync</div>
+      <div style="font-size:11px;color:var(--mut);margin-bottom:10px;line-height:1.5">
+        Salva automaticamente de qualquer dispositivo. Configure uma vez e pronto — sem precisar de backup manual.
+      </div>
+      <label class="inp-label">URL do Banco de Dados Firebase</label>
+      <input class="inp" id="firebase-url" placeholder="https://seu-projeto-default-rtdb.firebaseio.com" style="margin-bottom:7px">
+      <div style="display:flex;gap:7px">
+        <button class="btn btn-gold" style="flex:1;padding:9px" onclick="salvarFirebaseUrl()">✅ Conectar</button>
+        <button class="btn btn-dark" style="flex:0 0 auto;padding:9px 12px" onclick="pullCloud()">🔄 Puxar</button>
+      </div>
+      <div style="margin-top:8px;background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:9px">
+        <div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px">Como configurar:</div>
+        <div style="font-size:10px;color:var(--mut);line-height:1.6">
+          1. Acesse <span style="color:var(--gold)">console.firebase.google.com</span><br>
+          2. Crie um projeto gratuito<br>
+          3. Vá em <b style="color:var(--txt)">Realtime Database</b> → Criar banco<br>
+          4. Em <b style="color:var(--txt)">Regras</b>, cole: <span style="color:var(--grn);font-family:'JetBrains Mono'">{".read":true,".write":true}</span><br>
+          5. Copie a URL do banco e cole acima
+        </div>
+      </div>
+    </div>
+
+    <div class="div"></div>
+
+    <!-- Backup manual -->
+    <div style="margin-bottom:14px">
+      <div class="inp-label" style="margin-bottom:6px">📤 Backup Manual</div>
+      <button class="btn btn-gold" style="padding:10px;margin-bottom:7px" onclick="exportarJSON()">⬇️ Baixar arquivo de backup (.json)</button>
+      <button class="btn btn-dark" style="padding:10px" onclick="gerarCodigo()">📋 Gerar código para copiar</button>
+      <textarea id="export-code" class="sync-code" style="display:none;margin-top:8px" readonly onclick="this.select()"></textarea>
+      <div id="copy-hint" style="display:none;font-size:11px;color:var(--grn);margin-top:4px;text-align:center">✅ Toque no código para selecionar e copie</div>
+    </div>
+
+    <div class="div"></div>
+
+    <div>
+      <div class="inp-label" style="margin-bottom:6px">📥 Importar Backup Manual</div>
+      <button class="btn btn-dark" style="padding:10px;margin-bottom:7px" onclick="document.getElementById('json-file').click()">📁 Abrir arquivo de backup</button>
+      <input type="file" id="json-file" accept=".json" style="display:none" onchange="importarJSON(event)">
+      <div class="inp-label" style="margin-bottom:4px">Ou cole o código aqui:</div>
+      <textarea id="import-code" class="sync-code" placeholder="Cole o código gerado no outro dispositivo..."></textarea>
+      <button class="btn btn-blue" style="padding:10px;margin-top:7px" onclick="importarCodigo()">📲 Importar Código</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <button class="on" onclick="nav('pg-eventos',this)"><span class="ic">📅</span><span class="lb">Eventos</span></button>
+  <button onclick="nav('pg-atletas',this);renderDash()"><span class="ic">👥</span><span class="lb">Atletas</span></button>
+  <button onclick="nav('pg-kits',this);renderKits()"><span class="ic">🎽</span><span class="lb">Kits</span></button>
+  <button onclick="nav('pg-importar',this);checkImportWarn()"><span class="ic">📥</span><span class="lb">Importar</span></button>
+  <button onclick="nav('pg-whatsapp',this);renderWaEvPicker()"><span class="ic">💬</span><span class="lb">WhatsApp</span></button>
+</nav>
+
+<script>
+// ══════════════════════════════════════════
+//  DADOS
+// ══════════════════════════════════════════
+var db = { events: {}, activeId: null };
+try {
+  var _raw = localStorage.getItem('fera_db_v2');
+  if (_raw) db = JSON.parse(_raw);
+  if (!db.events) db.events = {};
+} catch(e) {}
+
+var _syncTimer = null;
+var _lastSync = null;
+var _pendingSync = false;   // houve alteração offline que precisa subir
+var _isOnline = navigator.onLine;
+var FIREBASE_URL = (localStorage.getItem('fera_firebase_url') || '').trim().replace(/\/$/, '');
+
+function salvar() {
+  try { localStorage.setItem('fera_db_v2', JSON.stringify(db)); } catch(e) {}
+  atualizarHeader();
+  if (FIREBASE_URL) {
+    if (_isOnline) {
+      agendarSync();
+    } else {
+      // offline: marca pendente, já está salvo no localStorage
+      _pendingSync = true;
+      try { localStorage.setItem('fera_pending_sync', '1'); } catch(e) {}
+      atualizarBtnSync();
+    }
+  }
+}
+
+function getEvAtivo() { return db.activeId ? db.events[db.activeId] : null; }
+function getAtletas() { var ev = getEvAtivo(); return ev ? (ev.atletas || []) : []; }
+function setAtletas(l) { var ev = getEvAtivo(); if (ev) ev.atletas = l; }
+
+function getEvStatus(ev) {
+  if (ev.statusManual) return ev.statusManual;
+  if (!ev.data) return 'ativo';
+  return new Date(ev.data + 'T23:59:59') < new Date() ? 'finalizado' : 'ativo';
+}
+
+// ══════════════════════════════════════════
+//  FIREBASE AUTO-SYNC (OFFLINE-FIRST)
+// ══════════════════════════════════════════
+
+// Recuperar flag de sync pendente entre sessões
+try {
+  if (localStorage.getItem('fera_pending_sync') === '1') _pendingSync = true;
+} catch(e) {}
+
+function agendarSync() {
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(pushCloud, 1500);
+}
+
+async function pushCloud() {
+  if (!FIREBASE_URL || !_isOnline) return;
+  var btn = document.getElementById('hdr-sync-btn');
+  try {
+    btn.className = 'hdr-sync syncing';
+    btn.innerHTML = '🔄 Sync';
+    var ctrl = new AbortController();
+    var timer = setTimeout(function(){ ctrl.abort(); }, 10000);
+    var res = await fetch(FIREBASE_URL + '/fera_db.json', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(db),
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    _lastSync = new Date();
+    _pendingSync = false;
+    try { localStorage.removeItem('fera_pending_sync'); } catch(e) {}
+    btn.className = 'hdr-sync synced';
+    btn.innerHTML = '✅ Sync';
+    setTimeout(function() { atualizarBtnSync(); }, 2500);
+  } catch(e) {
+    if (e.name === 'AbortError' || !navigator.onLine) {
+      // perdeu conexão durante o push — marca como pendente
+      _pendingSync = true;
+      try { localStorage.setItem('fera_pending_sync', '1'); } catch(ex) {}
+    }
+    atualizarBtnSync();
+    console.warn('Firebase push error:', e.message);
+  }
+}
+
+async function pullCloud(silent) {
+  if (!FIREBASE_URL) { if (!silent) toast('⚠️ Configure o Firebase primeiro!'); return; }
+  if (!_isOnline) { if (!silent) toast('📵 Sem conexão no momento.'); return; }
+  var btn = document.getElementById('hdr-sync-btn');
+  try {
+    btn.className = 'hdr-sync syncing';
+    btn.innerHTML = '🔄 Sync';
+    var ctrl = new AbortController();
+    var timer = setTimeout(function(){ ctrl.abort(); }, 10000);
+    var res = await fetch(FIREBASE_URL + '/fera_db.json?t=' + Date.now(), { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+    if (data && data.events) {
+      // Se há alterações locais pendentes, faz merge: prioriza local
+      if (_pendingSync) {
+        // sobe os dados locais (que são mais recentes) e ignora pull
+        await pushCloud();
+        if (!silent) toast('☁️ Alterações locais enviadas!');
+        return;
+      }
+      db = data;
+      if (!db.events) db.events = {};
+      try { localStorage.setItem('fera_db_v2', JSON.stringify(db)); } catch(e2) {}
+      _lastSync = new Date();
+      atualizarHeader();
+      renderEventos();
+      renderDash();
+      renderAtletas();
+      if (!silent) toast('☁️ Dados sincronizados!');
+    } else {
+      // banco vazio na nuvem — sobe os dados locais se existirem
+      if (Object.keys(db.events || {}).length > 0) {
+        await pushCloud();
+        if (!silent) toast('☁️ Dados locais enviados para a nuvem!');
+      } else {
+        if (!silent) toast('☁️ Banco vazio — nada a sincronizar.');
+      }
+    }
+    atualizarBtnSync();
+  } catch(e) {
+    atualizarBtnSync();
+    if (!silent) toast('❌ Erro ao sincronizar: ' + (e.name === 'AbortError' ? 'tempo esgotado' : e.message));
+    console.warn('Firebase pull error:', e.message);
+  }
+}
+
+function atualizarBtnSync() {
+  var btn = document.getElementById('hdr-sync-btn');
+  if (!btn) return;
+  if (!_isOnline) {
+    btn.className = 'hdr-sync offline';
+    btn.innerHTML = '📵 Offline';
+  } else if (_pendingSync) {
+    btn.className = 'hdr-sync pending';
+    btn.innerHTML = '🟣 Pendente';
+  } else if (FIREBASE_URL) {
+    btn.className = 'hdr-sync';
+    btn.innerHTML = '☁️ Sync';
+  } else {
+    btn.className = 'hdr-sync';
+    btn.innerHTML = '☁️ Sync';
+  }
+}
+
+// ─── Detectar online / offline ────────────────────
+window.addEventListener('online', function() {
+  _isOnline = true;
+  document.getElementById('offline-banner').classList.remove('on');
+  atualizarBtnSync();
+  if (FIREBASE_URL) {
+    if (_pendingSync) {
+      toast('🟢 Conexão restaurada — enviando alterações...');
+      setTimeout(pushCloud, 800);
+    } else {
+      setTimeout(function(){ pullCloud(true); }, 800);
+    }
+  }
+});
+
+window.addEventListener('offline', function() {
+  _isOnline = false;
+  document.getElementById('offline-banner').classList.add('on');
+  atualizarBtnSync();
+  clearTimeout(_syncTimer);
+  if (FIREBASE_URL) toast('📵 Ficou offline — trabalhando localmente');
+});
+
+function salvarFirebaseUrl() {
+  var url = (document.getElementById('firebase-url').value || '').trim().replace(/\/$/, '');
+  if (url && !url.startsWith('https://')) {
+    toast('⚠️ URL inválida! Deve começar com https://');
+    return;
+  }
+  FIREBASE_URL = url;
+  localStorage.setItem('fera_firebase_url', url);
+  atualizarStatusFirebase();
+  if (url) {
+    if (_isOnline) {
+      pullCloud(false);
+    } else {
+      toast('📵 Firebase salvo! Sincronizará quando voltar online.');
+    }
+  } else {
+    toast('Firebase desconectado.');
+    _pendingSync = false;
+    try { localStorage.removeItem('fera_pending_sync'); } catch(e) {}
+  }
+  atualizarBtnSync();
+  closeModal('modal-sync');
+}
+
+function atualizarStatusFirebase() {
+  var bar = document.getElementById('fb-status-bar');
+  var icon = document.getElementById('fb-status-icon');
+  var text = document.getElementById('fb-status-text');
+  var inp = document.getElementById('firebase-url');
+  if (inp) inp.value = FIREBASE_URL;
+  if (FIREBASE_URL && _isOnline) {
+    bar.className = 'firebase-status on';
+    icon.textContent = '🟢';
+    text.textContent = 'Conectado' + (_pendingSync ? ' · 🟣 sync pendente' : ' · online');
+  } else if (FIREBASE_URL && !_isOnline) {
+    bar.className = 'firebase-status off';
+    icon.textContent = '📵';
+    text.textContent = 'Offline' + (_pendingSync ? ' · alterações pendentes' : ' · dados salvos localmente');
+  } else {
+    bar.className = 'firebase-status off';
+    icon.textContent = '🔴';
+    text.textContent = 'Firebase não configurado';
+  }
+}
+
+// ─── Auto-pull a cada 90 s (apenas online, sem sync pendente) ───
+setInterval(function() {
+  if (FIREBASE_URL && _isOnline && !_pendingSync && document.visibilityState !== 'hidden') {
+    pullCloud(true);
+  }
+}, 90000);
+
+// ─── Pull ao retornar à aba ────────────────────
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden && FIREBASE_URL && _isOnline) {
+    if (_pendingSync) {
+      pushCloud();
+    } else if (_lastSync) {
+      var secAgo = (Date.now() - _lastSync.getTime()) / 1000;
+      if (secAgo > 60) pullCloud(true);
+    }
+  }
+});
+
+// ══════════════════════════════════════════
+//  SYNC / EXPORT / IMPORT MANUAL
+// ══════════════════════════════════════════
+function exportarJSON() {
+  var blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'fera-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  setTimeout(function() { URL.revokeObjectURL(a.href); }, 3000);
+  toast('✅ Backup baixado!');
+}
+function gerarCodigo() {
+  try {
+    var json = JSON.stringify(db);
+    var b64 = btoa(unescape(encodeURIComponent(json)));
+    var el = document.getElementById('export-code');
+    el.value = b64;
+    el.style.display = 'block';
+    document.getElementById('copy-hint').style.display = 'block';
+    el.select();
+    try { document.execCommand('copy'); toast('📋 Código copiado!'); } catch(e) { toast('Toque no código e copie manualmente'); }
+  } catch(e) { toast('❌ Erro ao gerar código'); }
+}
+function importarJSON(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      if (!data.events) throw new Error('Arquivo inválido');
+      confirmar('📥', 'Importar backup? Os dados atuais serão substituídos.', function() {
+        db = data;
+        if (!db.events) db.events = {};
+        salvar(); renderEventos(); renderDash(); renderAtletas();
+        closeModal('modal-sync');
+        toast('✅ Dados importados com sucesso!');
+      });
+    } catch(err) { toast('❌ Arquivo inválido: ' + err.message); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+function importarCodigo() {
+  var code = (document.getElementById('import-code').value || '').trim();
+  if (!code) { toast('⚠️ Cole o código primeiro!'); return; }
+  try {
+    var json = decodeURIComponent(escape(atob(code)));
+    var data = JSON.parse(json);
+    if (!data.events) throw new Error('Código inválido');
+    confirmar('📲', 'Importar dados? Os dados atuais serão substituídos.', function() {
+      db = data;
+      if (!db.events) db.events = {};
+      salvar(); renderEventos(); renderDash(); renderAtletas();
+      document.getElementById('import-code').value = '';
+      closeModal('modal-sync');
+      toast('✅ Dados importados!');
+    });
+  } catch(err) { toast('❌ Código inválido. Verifique e tente novamente.'); }
+}
+
+// ══════════════════════════════════════════
+//  NAVEGAÇÃO
+// ══════════════════════════════════════════
+var _navBtns = document.querySelectorAll('nav button');
+function nav(pageId, btn) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('on'); });
+  document.getElementById(pageId).classList.add('on');
+  _navBtns.forEach(function(b) { b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  else {
+    var idx = ['pg-eventos','pg-atletas','pg-kits','pg-importar','pg-whatsapp'].indexOf(pageId);
+    if (idx >= 0) _navBtns[idx].classList.add('on');
+  }
+}
+
+// ══════════════════════════════════════════
+//  TOAST / MODAL
+// ══════════════════════════════════════════
+var _tt;
+function toast(msg, dur) {
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('on');
+  clearTimeout(_tt);
+  _tt = setTimeout(function() { el.classList.remove('on'); }, dur || 2400);
+}
+function openModal(id) {
+  if (id === 'modal-sync') atualizarStatusFirebase();
+  document.getElementById(id).classList.add('on');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+function confirmar(icon, msg, onOk) {
+  document.getElementById('confirm-icon').textContent = icon;
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-ok').onclick = function() { closeModal('modal-confirm'); onOk(); };
+  openModal('modal-confirm');
+}
+
+// ══════════════════════════════════════════
+//  HEADER
+// ══════════════════════════════════════════
+function atualizarHeader() {
+  var ev = getEvAtivo();
+  var el = document.getElementById('hdr-ev-info');
+  if (ev) {
+    var st = getEvStatus(ev);
+    el.innerHTML = '<b>' + ev.nome.substring(0,18) + '</b><span>' + (ev.atletas||[]).length + ' atletas · ' + (st==='ativo'?'🟢':'⚫') + '</span>';
+  } else {
+    el.innerHTML = '<span style="color:var(--mut2);font-size:11px">Nenhum evento</span>';
+  }
+}
+
+// ══════════════════════════════════════════
+//  EVENTOS
+// ══════════════════════════════════════════
+var _editingEvId = null;
+var _evStatusSel = 'ativo';
+
+function setEvStatus(s) {
+  _evStatusSel = s;
+  document.getElementById('st-ativo').className = 'status-btn' + (s==='ativo'?' sel-active':'');
+  document.getElementById('st-finalizado').className = 'status-btn' + (s==='finalizado'?' sel-done':'');
+}
+function renderEventos() {
+  var evs = Object.values(db.events).sort(function(a,b) { return (b.criado||'').localeCompare(a.criado||''); });
+  var lbl = document.getElementById('ev-count-label');
+  if (lbl) lbl.textContent = evs.length + ' evento' + (evs.length!==1?'s':'');
+  var lst = document.getElementById('ev-list');
+  if (!evs.length) {
+    lst.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div>Nenhum evento.<br>Busque no site ou crie manualmente.</div></div>';
+    return;
+  }
+  lst.innerHTML = evs.map(function(ev) {
+    var isActive = db.activeId === ev.id;
+    var status = getEvStatus(ev);
+    var isDone = status === 'finalizado';
+    var cnt = (ev.atletas||[]).length;
+    // Derive banner URL from stored value or event ID
+    var _bUrl = ev.bannerUrl || '';
+    if (!_bUrl) {
+      var _mid = ev.evId || ((ev.urlSite||'').match(/id=(\d+)/i)||[])[1] || '';
+      if (_mid) _bUrl = 'https://feraesportes.com.br/assets/img/img_eventos/' + _mid + '/banner.png';
+    }
+    var bannerHtml;
+    if (_bUrl) {
+      bannerHtml = '<img class="ev-banner" src="' + _bUrl + '" loading="lazy"'
+        + ' data-evid="' + (ev.evId||'') + '" data-tried="0"'
+        + ' onerror="feraImgFallback(this)">'
+        + '<div class="ev-banner-placeholder" style="display:none">🏃</div>';
+    } else {
+      bannerHtml = '<div class="ev-banner-placeholder">🏃</div>';
+    }
+    var html = '<div class="ev-card' + (isActive?' active-ev':'') + '">'
+      + '<div class="ev-banner-wrap">' + bannerHtml + '</div>'
+      + '<div class="ev-body">'
+      + '<div class="ev-badges">'
+      + (isActive ? '<span class="badge badge-ev">⚡ Ativo</span>' : '')
+      + (isDone ? '<span class="badge badge-done">⚫ Finalizado</span>' : '<span class="badge badge-active">🟢 Em andamento</span>')
+      + '</div>'
+      + '<div class="ev-name">' + ev.nome + '</div>'
+      + '<div class="ev-meta">'
+      + (ev.data ? '<span>📅 ' + fmtData(ev.data) + '</span>' : '')
+      + (ev.cidade ? '<span>📍 ' + ev.cidade + '</span>' : '')
+      + '<span>👥 ' + cnt + '</span>'
+      + (ev.valor ? '<span>💰 R$' + fmtMoney(ev.valor) + '</span>' : '')
+      + '</div><div class="ev-actions">';
+    if (isActive) {
+      html += '<button class="btn btn-dark btn-sm" onclick="desativar(event)">✕ Desativar</button>';
+    } else {
+      html += '<button class="btn btn-gold btn-sm" onclick="ativarEv(\'' + ev.id + '\',event)">▶ Selecionar</button>';
+    }
+    html += '<button class="btn btn-dark btn-sm" onclick="abrirModalEvento(\'' + ev.id + '\',event)">✏️ Editar</button>';
+    if (isDone) {
+      var resUrl = ev.urlSite || '';
+      if (resUrl) {
+        html += '<a href="' + resUrl + '" target="_blank" class="btn btn-blue btn-sm" style="text-decoration:none">🏅 Ver Resultados</a>';
+      } else if (ev.evId) {
+        // Fallback to event page on site
+        html += '<a href="https://feraesportes.com.br/evento.php?id=' + ev.evId + '" target="_blank" class="btn btn-blue btn-sm" style="text-decoration:none">🏅 Ver no Site</a>';
+      }
+    } else if (ev.evId) {
+      // Active event: show inscription link
+      html += '<a href="https://feraesportes.com.br/inscricao.php?id=' + ev.evId + '" target="_blank" class="btn btn-dark btn-sm" style="text-decoration:none">📝 Inscrições</a>';
+    }
+    html += '<button class="btn btn-red btn-sm" onclick="deletarEv(\'' + ev.id + '\',event)">🗑️</button>';
+    html += '</div></div></div>';
+    return html;
+  }).join('');
+}
+function ativarEv(id, e) {
+  if (e) e.stopPropagation();
+  db.activeId = id; salvar(); renderEventos();
+  toast('✅ Evento selecionado!');
+}
+function desativar(e) {
+  if (e) e.stopPropagation();
+  db.activeId = null; salvar(); renderEventos();
+}
+function deletarEv(id, e) {
+  if (e) e.stopPropagation();
+  var ev = db.events[id]; if (!ev) return;
+  confirmar('🗑️', 'Excluir "' + ev.nome + '"? Todos os atletas serão apagados.', function() {
+    if (db.activeId === id) db.activeId = null;
+    delete db.events[id]; salvar(); renderEventos();
+    toast('🗑️ Evento excluído.');
+  });
+}
+function abrirModalEvento(id, e) {
+  if (e) e.stopPropagation();
+  _editingEvId = id;
+  var ev = id ? db.events[id] : null;
+  document.getElementById('modal-ev-title').textContent = ev ? 'Editar Evento' : 'Novo Evento';
+  document.getElementById('ev-nome').value = ev ? ev.nome : '';
+  document.getElementById('ev-data').value = ev ? ev.data : '';
+  document.getElementById('ev-cidade').value = ev ? ev.cidade : '';
+  document.getElementById('ev-valor').value = ev ? ev.valor : '';
+  document.getElementById('ev-link').value = ev ? (ev.urlSite||'') : '';
+  var st = ev ? (ev.statusManual || getEvStatus(ev)) : 'ativo';
+  setEvStatus(st);
+  openModal('modal-ev');
+}
+function salvarEvento() {
+  var nome = document.getElementById('ev-nome').value.trim();
+  if (!nome) { toast('⚠️ Informe o nome!'); return; }
+  if (_editingEvId && db.events[_editingEvId]) {
+    var ev = db.events[_editingEvId];
+    ev.nome = nome;
+    ev.data = document.getElementById('ev-data').value;
+    ev.cidade = document.getElementById('ev-cidade').value.trim();
+    ev.valor = parseFloat(document.getElementById('ev-valor').value)||0;
+    ev.statusManual = _evStatusSel;
+    ev.urlSite = document.getElementById('ev-link').value.trim();
+  } else {
+    var newId = 'ev_' + Date.now();
+    db.events[newId] = {
+      id: newId, nome: nome,
+      data: document.getElementById('ev-data').value,
+      cidade: document.getElementById('ev-cidade').value.trim(),
+      valor: parseFloat(document.getElementById('ev-valor').value)||0,
+      statusManual: _evStatusSel,
+      urlSite: document.getElementById('ev-link').value.trim(),
+      atletas: [], criado: new Date().toISOString()
+    };
+    db.activeId = newId;
+  }
+  closeModal('modal-ev'); salvar(); renderEventos();
+  toast('✅ Evento salvo!');
+}
+
+// ══════════════════════════════════════════
+//  SCRAPING TOGGLE
+// ══════════════════════════════════════════
+function toggleScrape(btn) {
+  var panel = document.getElementById('scrape-panel');
+  var arrow = document.getElementById('scrape-arrow');
+  var open = panel.style.display !== 'none';
+  panel.style.display = open ? 'none' : 'block';
+  arrow.textContent = open ? '▼' : '▲';
+}
+
+// ══════════════════════════════════════════
+//  SCRAPING
+// ══════════════════════════════════════════
+var PROXIES = [
+  function(u){return 'https://corsproxy.io/?'+encodeURIComponent(u);},
+  function(u){return 'https://api.allorigins.win/get?url='+encodeURIComponent(u);},
+  function(u){return 'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u);},
+  function(u){return 'https://thingproxy.freeboard.io/fetch/'+u;},
+  function(u){return 'https://cors-anywhere.herokuapp.com/'+u;},
+  function(u){return 'https://proxy.cors.sh/'+u;}
+];
+
+async function fetchProxy(url) {
+  var errors = [];
+  for (var i = 0; i < PROXIES.length; i++) {
+    try {
+      var ctrl = new AbortController();
+      var timer = setTimeout(function(){ctrl.abort();}, 8000);
+      var proxyUrl = PROXIES[i](url);
+      var res = await fetch(proxyUrl, {signal: ctrl.signal});
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      var text = await res.text();
+      // allorigins wraps in JSON
+      if (text.trim().startsWith('{')) {
+        try { var j=JSON.parse(text); text=j.contents||j.html||text; } catch(x){}
+      }
+      if (text && text.length > 500) return text;
+      throw new Error('Resposta vazia ou muito curta');
+    } catch(err) {
+      errors.push('Proxy '+(i+1)+': '+err.message);
+    }
+  }
+  throw new Error('Todos os proxies falharam. Verifique sua conexão ou acesse o site diretamente.');
+}
+
+async function buscarEventosSite() {
+  var stEl = document.getElementById('scrape-status');
+  var rsEl = document.getElementById('scrape-results');
+  stEl.style.display = 'block';
+  stEl.innerHTML = '<div class="loading"><div class="spin"></div><div style="font-size:12px;color:var(--mut)">Buscando eventos...</div></div>';
+  rsEl.innerHTML = '';
+  try {
+    var html = await fetchProxy('https://feraesportes.com.br/index.php');
+    var events = parseEventosSite(html);
+    stEl.style.display = 'none';
+    if (!events.length) {
+      rsEl.innerHTML = '<div class="card"><div style="font-size:12px;color:var(--mut)">Nenhum evento encontrado. <a href="https://feraesportes.com.br" target="_blank" style="color:var(--gold)">Abrir site →</a></div></div>';
+      return;
+    }
+    rsEl.innerHTML = '<div style="font-size:10px;color:var(--mut);margin-bottom:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase">'
+      + events.length + ' eventos encontrados</div>'
+      + events.map(function(ev) {
+        var exists = Object.values(db.events).find(function(e) { return e.nome === ev.nome; });
+        var evEnc = encodeURIComponent(JSON.stringify(ev));
+        var isDone = ev.data && new Date(ev.data + 'T23:59:59') < new Date();
+        return '<div class="scrape-item">'
+          + (ev.bannerUrl ? '<img class="scrape-banner" src="' + ev.bannerUrl + '" loading="lazy" onerror="if(this.src.match(/\\.png$/i)){this.src=this.src.replace(/\\.png$/i,\'.jpg\');}else{this.style.display=\'none\';}">' : '')
+          + '<div class="scrape-body">'
+          + '<div class="ev-badges" style="margin-bottom:4px">'
+          + (isDone ? '<span class="badge badge-done">⚫ Finalizado</span>' : '<span class="badge badge-active">🟢 Em andamento</span>')
+          + '</div>'
+          + '<div class="scrape-name">' + ev.nome + '</div>'
+          + '<div class="scrape-meta">'
+          + (ev.data ? '📅 ' + fmtData(ev.data) + (ev.cidade?'  ':'') : '')
+          + (ev.cidade ? '📍 ' + ev.cidade : '')
+          + '</div>'
+          + '<div class="scrape-actions">'
+          + (exists
+            ? '<span style="font-size:11px;color:var(--grn)">✅ Já adicionado</span>'
+            : '<button class="btn btn-gold btn-sm" onclick="importarDoSite(decodeURIComponent(\'' + evEnc + '\'))">➕ Adicionar</button>')
+          + (ev.urlSite ? ' <a href="' + ev.urlSite + '" target="_blank" class="btn btn-dark btn-sm" style="text-decoration:none">🔗 Ver</a>' : '')
+          + '</div></div></div>';
+      }).join('');
+  } catch(err) {
+    stEl.style.display = 'none';
+    rsEl.innerHTML = '<div class="card" style="border-color:var(--red)">'
+      + '<div style="color:var(--red);font-size:12px;font-weight:600;margin-bottom:6px">❌ Não foi possível carregar</div>'
+      + '<div style="font-size:11px;color:var(--mut);margin-bottom:10px">' + err.message + '</div>'
+      + '<div style="font-size:11px;color:var(--mut);margin-bottom:10px">Dica: verifique sua conexão e tente novamente. Se persistir, adicione os eventos manualmente.</div>'
+      + '<div style="display:flex;gap:7px;flex-wrap:wrap">'
+      + '<button class="btn btn-gold btn-sm" onclick="buscarEventosSite()">🔄 Tentar novamente</button>'
+      + '<a href="https://feraesportes.com.br" target="_blank" class="btn btn-dark btn-sm" style="text-decoration:none">🔗 Abrir site</a>'
+      + '</div></div>';
+  }
+}
+function parseEventosSite(html) {
+  var events = [], seen = {};
+  try {
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+
+    // Strategy: find all links to evento.php?id=N — these are the ONLY real events
+    var eventLinks = doc.querySelectorAll('a[href*="evento.php?id"], a[href*="evento.php"][href*="id="]');
+    eventLinks.forEach(function(lk) {
+      var href = lk.getAttribute('href') || '';
+      var idMatch = href.match(/id=(\d+)/i);
+      if (!idMatch) return;
+      var evId = idMatch[1];
+
+      // Walk up to find the event container
+      var container = lk.parentElement;
+      for (var i = 0; i < 5 && container; i++, container = container.parentElement) {
+        var h4 = container.querySelector('h4');
+        if (h4) break;
+      }
+      if (!container) return;
+
+      var h4 = container.querySelector('h4');
+      if (!h4) return;
+      var nome = h4.textContent.trim();
+      if (!nome || nome.length < 4 || nome.length > 140) return;
+      if (seen[evId]) return;
+      seen[evId] = true;
+
+      // Date: look for DD/MM/YYYY in container text
+      var dm = (container.textContent || '').match(/(\d{2})\/(\d{2})\/(\d{4})/);
+      var data = dm ? dm[3] + '-' + dm[2] + '-' + dm[1] : '';
+
+      // Banner: prefer img with img_eventos in src
+      var imgEl = container.querySelector('img[src*="img_eventos"]');
+      var banner = '';
+      if (imgEl) {
+        banner = imgEl.getAttribute('src') || '';
+        if (banner && !banner.startsWith('http')) banner = 'https://feraesportes.com.br/' + banner.replace(/^\//, '');
+      }
+      if (!banner) banner = 'https://feraesportes.com.br/assets/img/img_eventos/' + evId + '/banner.png';
+
+      var url = 'https://feraesportes.com.br/evento.php?id=' + evId;
+      events.push({ nome: nome, data: data, cidade: '', urlSite: url, bannerUrl: banner, evId: evId });
+    });
+  } catch(x) { console.warn('parseEventosSite error:', x); }
+
+  // Fallback: regex — only entries with evento.php?id=
+  if (!events.length) {
+    var re = /href=["']([^"']*evento\.php[^"']*id=(\d+)[^"']*)[^>]*[\s\S]{0,800}?<h4[^>]*>([\s\S]*?)<\/h4>/gi;
+    var re2 = /<h4[^>]*>([\s\S]*?)<\/h4>[\s\S]{0,800}?href=["'][^"']*evento\.php[^"']*id=(\d+)/gi;
+    var seenFb = {};
+    [re, re2].forEach(function(rx) {
+      var m;
+      while ((m = rx.exec(html)) !== null) {
+        var evId = m[2] || m[4];
+        var nome = (m[3] || m[1] || '').replace(/<[^>]+>/g,'').trim();
+        if (!evId || !nome || nome.length < 4 || seenFb[evId]) continue;
+        seenFb[evId] = true;
+        var url = 'https://feraesportes.com.br/evento.php?id=' + evId;
+        events.push({ nome: nome, data: '', cidade: '', urlSite: url, bannerUrl: 'https://feraesportes.com.br/assets/img/img_eventos/' + evId + '/banner.png', evId: evId });
+      }
+    });
+  }
+  return events;
+}
+
+function importarDoSite(evArg) {
+  var ev = typeof evArg==='string' ? JSON.parse(evArg) : evArg;
+  var newId = 'ev_'+Date.now();
+  var isDone = ev.data && new Date(ev.data+'T23:59:59') < new Date();
+  db.events[newId] = {
+    id: newId, nome: ev.nome, data: ev.data||'',
+    cidade: ev.cidade||'', valor: 0,
+    statusManual: isDone ? 'finalizado' : 'ativo',
+    urlSite: ev.urlSite||'',
+    bannerUrl: ev.bannerUrl || getBannerUrl('', ev.urlSite),
+    evId: ev.evId || ((ev.urlSite||'').match(/id=(\d+)/i)||[])[1] || '',
+    atletas: [], criado: new Date().toISOString()
+  };
+  db.activeId = newId;
+  salvar(); renderEventos();
+  toast('✅ "'+ev.nome+'" adicionado!');
+  document.getElementById('ev-list').scrollIntoView({ behavior:'smooth' });
+}
+
+// ══════════════════════════════════════════
+//  ATLETAS
+// ══════════════════════════════════════════
+var _filtro = 'todos';
+var _BARCOLORS = ['var(--gold)','#d4a830','var(--grn)','var(--blu)','var(--red)','var(--pur)'];
+
+function setFiltro(f, btn) {
+  _filtro = f;
+  document.querySelectorAll('#filtros .chip').forEach(function(c){c.classList.remove('on');});
+  if (btn) btn.classList.add('on');
+  renderAtletas();
+}
+function renderDash() {
+  var aths = getAtletas();
+  var ds = document.getElementById('dash-stats');
+  if (!aths.length) { ds.style.display='none'; return; }
+  ds.style.display = 'block';
+  var total=aths.length, masc=aths.filter(function(a){return a.sexo!=='F';}).length;
+  var fem=total-masc, cities=new Set(aths.map(function(a){return a.cidade;}).filter(Boolean)).size;
+  setText('s-total',total); setText('s-masc',masc); setText('s-fem',fem); setText('s-cidades',cities);
+  var sizes={PP:0,P:0,M:0,G:0,GG:0,XG:0};
+  aths.forEach(function(a){if(sizes[a.tamanho]!==undefined)sizes[a.tamanho]++;});
+  var maxSz=Math.max.apply(null,Object.values(sizes))||1;
+  document.getElementById('cam-bars').innerHTML = Object.keys(sizes).map(function(sz,i){
+    var n=sizes[sz], w=Math.round(n/maxSz*100);
+    return '<div class="bar-row"><div class="bar-lbl">'+sz+'</div><div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+_BARCOLORS[i]+'"><span class="bar-num">'+n+'</span></div></div></div>';
+  }).join('');
+  var cm={};
+  aths.forEach(function(a){if(a.cidade)cm[a.cidade]=(cm[a.cidade]||0)+1;});
+  var tc=Object.entries(cm).sort(function(a,b){return b[1]-a[1];}).slice(0,6);
+  var mc=tc.length?tc[0][1]:1;
+  document.getElementById('city-bars').innerHTML = tc.map(function(c,i){
+    var w=Math.round(c[1]/mc*100);
+    return '<div class="bar-row"><div class="bar-lbl">'+(c[0]||'—').substring(0,10)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+_BARCOLORS[i%6]+'"><span class="bar-num">'+c[1]+'</span></div></div></div>';
+  }).join('');
+  var ev=getEvAtivo(), finEl=document.getElementById('fin-info');
+  if (ev&&ev.valor>0) {
+    var pagos=aths.filter(function(a){return a.pago==='sim';}).length;
+    finEl.innerHTML = row('Esperada','R$ '+fmtMoney(total*ev.valor),'var(--gold)')
+      +row('Confirmada','R$ '+fmtMoney(pagos*ev.valor),'var(--grn)')
+      +row('Pagos / Pendentes',pagos+' / '+(total-pagos),'var(--txt)');
+  } else {
+    finEl.innerHTML='<div style="font-size:11px;color:var(--mut)">Configure o valor no evento.</div>';
+  }
+}
+function row(l,v,c){
+  return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--brd)"><span style="font-size:12px;color:var(--mut)">'+l+'</span><span style="font-size:12px;font-weight:700;color:'+c+'">'+v+'</span></div>';
+}
+function renderAtletas() {
+  var aths=getAtletas(), q=(document.getElementById('busca').value||'').toLowerCase(), f=_filtro;
+  var filtered=aths.filter(function(a){
+    if(f==='M'&&a.sexo!=='M')return false;
+    if(f==='F'&&a.sexo!=='F')return false;
+    if(f==='nao_pago'&&a.pago==='sim')return false;
+    if(f==='pago'&&a.pago!=='sim')return false;
+    if(f==='sem_tel'&&(a.telefone||'').replace(/\D/g,'').length>=10)return false;
+    if(q){var h=((a.nome||'')+' '+(a.cidade||'')+' '+(a.telefone||'')+' '+(a.equipe||'')).toLowerCase();if(!h.includes(q))return false;}
+    return true;
+  });
+  var lst=document.getElementById('atleta-list');
+  if(!aths.length){lst.innerHTML='<div class="empty"><div class="empty-icon">👥</div><div>Nenhum atleta.<br>Vá em Importar.</div></div>';return;}
+  if(!filtered.length){lst.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div>Nenhum resultado.</div></div>';return;}
+  lst.innerHTML=filtered.slice(0,200).map(function(a){
+    var init=(a.nome||'?').split(' ').map(function(n){return n[0]||'';}).slice(0,2).join('').toUpperCase();
+    return '<div class="ath" onclick="abrirAtleta(\''+a.id+'\')">'
+      +'<div class="ath-av '+(a.sexo==='F'?'av-f':'av-m')+'">'+init+'</div>'
+      +'<div style="flex:1;min-width:0"><div class="ath-name">'+(a.nome||'Sem nome')+'</div>'
+      +'<div class="ath-sub">'+(a.tamanho?'👕 '+a.tamanho+' · ':'')+''+(a.percurso||'')+(a.percurso&&a.cidade?' · ':'')+''+(a.cidade||'')+(a.equipe?' · 🤝 '+a.equipe.substring(0,14):'')+'</div></div>'
+      +'<div style="text-align:right;flex-shrink:0"><div style="font-family:\'Bebas Neue\',sans-serif;font-size:17px;color:var(--gold)">'+(a.tamanho||'')+'</div>'
+      +'<div class="pago-dot" style="background:'+(a.pago==='sim'?'var(--grn)':'var(--red)')+';margin-left:auto;margin-top:4px"></div></div>'
+      +'</div>';
+  }).join('');
+  if(filtered.length>200) lst.innerHTML+='<div style="text-align:center;padding:10px;font-size:11px;color:var(--mut)">...e mais '+(filtered.length-200)+' atletas</div>';
+}
+function abrirAtleta(id) {
+  var aths=getAtletas(), a=aths.find(function(x){return x.id===id;});
+  if(!a)return;
+  var tel=(a.telefone||'').replace(/\D/g,'');
+  document.getElementById('modal-ath-content').innerHTML=
+    '<div style="text-align:center;margin-bottom:14px">'
+    +'<div class="ath-av '+(a.sexo==='F'?'av-f':'av-m')+'" style="width:52px;height:52px;font-size:19px;margin:0 auto 8px;border-radius:12px">'
+    +(a.nome||'?').split(' ').map(function(n){return n[0]||'';}).slice(0,2).join('').toUpperCase()+'</div>'
+    +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:21px;letter-spacing:1px">'+(a.nome||'Sem nome')+'</div>'
+    +'</div>'
+    +'<div class="detail-grid">'
+    +dc('Tamanho',a.tamanho||'—')+dc('Sexo',a.sexo==='F'?'♀ Fem':'♂ Masc')
+    +dc('Cidade',a.cidade||'—')+dc('Percurso',a.percurso||'—')
+    +'</div>'
+    +(a.nasc?'<div style="font-size:12px;color:var(--mut);margin-bottom:5px">🎂 '+fmtData(a.nasc)+(a.categoria?' · '+a.categoria:'')+'</div>':'')
+    +(a.telefone?'<div style="font-size:12px;color:var(--mut);margin-bottom:5px">📞 '+a.telefone+'</div>':'')
+    +(a.email?'<div style="font-size:12px;color:var(--mut);margin-bottom:5px">✉️ '+a.email+'</div>':'')
+    +(a.equipe?'<div style="font-size:12px;color:var(--mut);margin-bottom:5px">🤝 '+a.equipe+'</div>':'')
+    +'<div class="div"></div>'
+    +'<div style="display:flex;gap:7px;margin-bottom:7px">'
+    +'<div style="flex:1"><label class="inp-label">Status</label>'
+    +'<select class="inp" style="padding:9px" onchange="updAtleta(\''+id+'\',\'status\',this.value)">'
+    +'<option value="inscrito"'+(a.status==='inscrito'?' selected':'')+'>Inscrito</option>'
+    +'<option value="confirmado"'+(a.status==='confirmado'?' selected':'')+'>Confirmado</option>'
+    +'<option value="retirou"'+(a.status==='retirou'?' selected':'')+'>Retirou Kit</option>'
+    +'</select></div>'
+    +'<div style="flex:1"><label class="inp-label">Pagamento</label>'
+    +'<select class="inp" style="padding:9px" onchange="updAtleta(\''+id+'\',\'pago\',this.value)">'
+    +'<option value="sim"'+(a.pago==='sim'?' selected':'')+'>✅ Pago</option>'
+    +'<option value="nao"'+(a.pago!=='sim'?' selected':'')+'>⚠️ Pendente</option>'
+    +'</select></div></div>'
+    +(tel.length>=10
+      ?'<a href="https://wa.me/55'+tel+'" target="_blank" class="btn btn-wa" style="margin-bottom:7px;text-decoration:none">💬 ABRIR WHATSAPP</a>'
+      :'<div style="font-size:11px;color:var(--mut2);text-align:center;margin-bottom:7px">📵 Sem telefone cadastrado</div>')
+    +'<button class="btn btn-red btn-sm" style="width:100%;padding:9px;margin-top:2px" onclick="excluirAtleta(\''+id+'\')">🗑️ Excluir Atleta</button>';
+  openModal('modal-ath');
+}
+function dc(l,v){return '<div class="detail-cell"><div class="detail-cell-l">'+l+'</div><div class="detail-cell-v">'+v+'</div></div>';}
+function updAtleta(id,f,v){
+  var aths=getAtletas(), a=aths.find(function(x){return x.id===id;});
+  if(!a)return; a[f]=v; setAtletas(aths); salvar(); renderAtletas(); renderDash();
+  toast('✅ Atualizado!');
+}
+function excluirAtleta(id){
+  confirmar('🗑️','Excluir este atleta?',function(){
+    setAtletas(getAtletas().filter(function(x){return x.id!==id;}));
+    salvar(); closeModal('modal-ath'); renderAtletas(); renderDash();
+    toast('🗑️ Atleta removido.');
+  });
+}
+
+// ══════════════════════════════════════════
+//  KITS
+// ══════════════════════════════════════════
+var _kitFiltro = 'todos';
+
+function setKitFiltro(f, btn) {
+  _kitFiltro = f;
+  document.querySelectorAll('#kit-filtros .chip').forEach(function(c){c.classList.remove('on');});
+  if (btn) btn.classList.add('on');
+  renderKits();
+}
+
+function renderKits() {
+  var ev = getEvAtivo();
+  var noEv = document.getElementById('kits-no-ev');
+  var stats = document.getElementById('kit-stats');
+  var exportArea = document.getElementById('kit-export-area');
+  var buscaArea = document.getElementById('kit-busca-area');
+  var lst = document.getElementById('kit-list');
+
+  if (!ev) {
+    noEv.style.display = 'block';
+    stats.style.display = 'none';
+    exportArea.style.display = 'none';
+    buscaArea.style.display = 'none';
+    lst.innerHTML = '';
+    return;
+  }
+
+  noEv.style.display = 'none';
+  var aths = getAtletas();
+  var actionsArea = document.getElementById('kit-actions-area');
+  if (actionsArea) actionsArea.style.display = 'block';
+
+  if (!aths.length) {
+    stats.style.display = 'none';
+    exportArea.style.display = 'none';
+    buscaArea.style.display = 'none';
+    lst.innerHTML = '<div class="empty"><div class="empty-icon">🎽</div><div>Nenhum atleta ainda.<br>Importe uma planilha ou adicione manualmente.</div></div>';
+    return;
+  }
+
+  var entregues = aths.filter(function(a){ return a.kitRetirado; }).length;
+  var pendentes = aths.length - entregues;
+
+  setText('k-entregues', entregues);
+  setText('k-pendentes', pendentes);
+  stats.style.display = 'grid';
+  exportArea.style.display = entregues > 0 ? 'block' : 'none';
+  buscaArea.style.display = 'block';
+
+  var q = (document.getElementById('kit-busca').value || '').toLowerCase();
+  var filtered = aths.filter(function(a) {
+    if (_kitFiltro === 'entregue' && !a.kitRetirado) return false;
+    if (_kitFiltro === 'pendente' && a.kitRetirado) return false;
+    if (q) {
+      var h = ((a.nome||'')+' '+(a.percurso||'')+' '+(a.tamanho||'')+' '+(a.cidade||'')).toLowerCase();
+      if (!h.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (!filtered.length) {
+    lst.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><div>Nenhum resultado.</div></div>';
+    return;
+  }
+
+  lst.innerHTML = filtered.map(function(a) {
+    var init = (a.nome||'?').split(' ').map(function(n){return n[0]||'';}).slice(0,2).join('').toUpperCase();
+    var entregue = a.kitRetirado;
+    return '<div class="kit-item ' + (entregue ? 'kit-ok' : 'kit-pend') + '" onclick="abrirKitEntrega(\'' + a.id + '\')">'
+      + '<div class="ath-av ' + (a.sexo==='F'?'av-f':'av-m') + '">' + init + '</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div class="ath-name">' + (a.nome||'Sem nome') + '</div>'
+      + '<div class="ath-sub">'
+      + (a.numero ? '#' + a.numero + ' · ' : '')
+      + (a.tamanho ? '👕 ' + a.tamanho : '—')
+      + (a.percurso ? ' · 🏃 ' + a.percurso : '')
+      + (entregue && a.kitRetiradoEm ? ' · ' + fmtHora(a.kitRetiradoEm) : '')
+      + '</div>'
+      + '</div>'
+      + '<span class="kit-badge ' + (entregue ? 'ok' : 'pend') + '">'
+      + (entregue ? '✅ Entregue' : '⏳ Pendente')
+      + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+var _kitEditando = false;
+var _kitAthId = '';
+
+function abrirKitEntrega(id) {
+  _kitAthId = id;
+  _kitEditando = false;
+  renderModalKit();
+  openModal('modal-kit');
+}
+
+function renderModalKit() {
+  var aths = getAtletas();
+  var a = aths.find(function(x){ return x.id === _kitAthId; });
+  if (!a) return;
+
+  var init = (a.nome||'?').split(' ').map(function(n){return n[0]||'';}).slice(0,2).join('').toUpperCase();
+  var entregue = a.kitRetirado;
+
+  var html = '<div style="text-align:center;margin-bottom:16px">'
+    + '<div class="ath-av ' + (a.sexo==='F'?'av-f':'av-m') + '" style="width:56px;height:56px;font-size:20px;margin:0 auto 8px;border-radius:12px">' + init + '</div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;letter-spacing:1px">' + (a.nome||'Sem nome') + '</div>'
+    + '<div style="font-size:11px;color:var(--mut)">' + (a.percurso||'') + (a.percurso&&a.tamanho?' · ':'') + (a.tamanho?'👕 '+a.tamanho:'') + '</div>'
+    + '</div>';
+
+  if (entregue) {
+    // Já entregue
+    html += '<div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:14px;text-align:center;margin-bottom:14px">'
+      + '<div style="font-size:20px;margin-bottom:4px">✅</div>'
+      + '<div style="font-size:14px;font-weight:700;color:var(--grn)">Kit Entregue!</div>'
+      + (a.kitRetiradoEm ? '<div style="font-size:11px;color:var(--mut);margin-top:3px">em ' + new Date(a.kitRetiradoEm).toLocaleString('pt-BR') + '</div>' : '')
+      + '</div>';
+    html += '<div class="kit-conf-box">'
+      + krow('👤 Nome', a.nome||'—')
+      + (a.numero ? krow('#️⃣ N° Atleta', a.numero) : '')
+      + krow('👕 Tamanho', a.tamanho||'—')
+      + krow('🏃 Percurso', a.percurso||'—')
+      + krow('🏙️ Cidade', a.cidade||'—')
+      + krow('📞 Telefone', a.telefone||'—')
+      + '</div>';
+    html += '<button class="btn btn-dark" style="margin-bottom:7px" onclick="desfazerEntregaKit(\'' + _kitAthId + '\')">↩️ Desfazer Entrega</button>';
+    html += '<button class="btn btn-dark" onclick="closeModal(\'modal-kit\')">✕ Fechar</button>';
+  } else if (_kitEditando) {
+    // Modo edição
+    html += '<div style="font-size:11px;color:var(--blu);background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:9px;padding:9px 12px;margin-bottom:12px">✏️ Modo edição ativo. Corrija os dados abaixo.</div>';
+    html += '<div class="inp-wrap"><label class="inp-label">👤 Nome</label><input class="inp" id="kit-edit-nome" value="' + esc(a.nome) + '"></div>';
+    html += '<div class="inp-row">'
+      + '<div class="inp-wrap"><label class="inp-label">👕 Tamanho</label><select class="inp" id="kit-edit-tam">'
+      + ['','PP','P','M','G','GG','XG','XGG','XXG','GGG','XXX'].map(function(t){ return '<option value="'+t+'"'+(t===a.tamanho?' selected':'')+'>'+( t||'— Não informado —')+'</option>'; }).join('')
+      + '</select></div>'
+      + '<div class="inp-wrap"><label class="inp-label">🏃 Percurso</label><input class="inp" id="kit-edit-perc" value="' + esc(a.percurso) + '"></div>'
+      + '</div>';
+    html += '<div class="inp-row">'
+      + '<div class="inp-wrap"><label class="inp-label">#️⃣ N° do Atleta</label><input class="inp" id="kit-edit-num" type="number" placeholder="Ex: 142" value="' + esc(a.numero||'') + '"></div>'
+      + '<div class="inp-wrap"><label class="inp-label">⚥ Sexo</label><select class="inp" id="kit-edit-sexo">'
+      + '<option value="M"'+(a.sexo!=='F'?' selected':'')+'>♂ Masculino</option>'
+      + '<option value="F"'+(a.sexo==='F'?' selected':'')+'>♀ Feminino</option>'
+      + '</select></div>'
+      + '</div>';
+    html += '<div class="inp-row">'
+      + '<div class="inp-wrap"><label class="inp-label">🏙️ Cidade</label><input class="inp" id="kit-edit-cid" value="' + esc(a.cidade) + '"></div>'
+      + '<div class="inp-wrap"><label class="inp-label">📞 Telefone</label><input class="inp" id="kit-edit-tel" value="' + esc(a.telefone) + '"></div>'
+      + '</div>';
+    html += '<div style="display:flex;gap:7px;margin-top:4px">'
+      + '<button class="btn btn-gold" style="flex:1" onclick="salvarEdicaoKit(\'' + _kitAthId + '\')">💾 Salvar Dados</button>'
+      + '<button class="btn btn-dark" style="flex:0 0 auto;padding:11px 14px" onclick="_kitEditando=false;renderModalKit()">✕</button>'
+      + '</div>';
+  } else {
+    // Confirmação de entrega
+    html += '<div style="font-size:12px;color:var(--mut);margin-bottom:10px;text-align:center">Verifique se todos os dados estão corretos antes de confirmar a entrega.</div>';
+    html += '<div class="kit-conf-box">'
+      + krow('👤 Nome', a.nome||'—')
+      + (a.numero ? krow('#️⃣ N° Atleta', a.numero) : '')
+      + krow('👕 Tamanho', a.tamanho||'—')
+      + krow('🏃 Percurso', a.percurso||'—')
+      + krow('🏙️ Cidade', a.cidade||'—')
+      + krow('📞 Telefone', a.telefone||'—')
+      + '</div>';
+    html += '<button class="btn btn-dark" style="margin-bottom:7px" onclick="_kitEditando=true;renderModalKit()">✏️ Editar Dados</button>';
+    html += '<button class="btn btn-green" style="font-size:15px;padding:13px" onclick="confirmarEntregaKit(\'' + _kitAthId + '\')">✅ CONFIRMAR ENTREGA</button>';
+    html += '<button class="btn btn-dark" style="margin-top:7px" onclick="closeModal(\'modal-kit\')">✕ Cancelar</button>';
+  }
+
+  document.getElementById('modal-kit-content').innerHTML = html;
+}
+
+function krow(l, v) {
+  return '<div class="kit-conf-row"><span class="kit-conf-lbl">' + l + '</span><span class="kit-conf-val">' + v + '</span></div>';
+}
+
+function esc(s) {
+  return (s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function salvarEdicaoKit(id) {
+  var aths = getAtletas();
+  var a = aths.find(function(x){ return x.id === id; });
+  if (!a) return;
+  a.nome = document.getElementById('kit-edit-nome').value.trim() || a.nome;
+  a.tamanho = document.getElementById('kit-edit-tam').value;
+  a.percurso = document.getElementById('kit-edit-perc').value.trim();
+  a.cidade = document.getElementById('kit-edit-cid').value.trim();
+  a.telefone = normTel(document.getElementById('kit-edit-tel').value);
+  var numEl = document.getElementById('kit-edit-num');
+  if (numEl) a.numero = numEl.value.trim();
+  var sexoEl = document.getElementById('kit-edit-sexo');
+  if (sexoEl) a.sexo = sexoEl.value;
+  setAtletas(aths);
+  salvar();
+  renderAtletas();
+  _kitEditando = false;
+  renderModalKit();
+  toast('✅ Dados atualizados!');
+}
+
+function confirmarEntregaKit(id) {
+  var aths = getAtletas();
+  var a = aths.find(function(x){ return x.id === id; });
+  if (!a) return;
+  a.kitRetirado = true;
+  a.kitRetiradoEm = new Date().toISOString();
+  a.status = 'retirou';
+  setAtletas(aths);
+  salvar();
+  renderKits();
+  renderModalKit();
+  toast('🎽 Kit entregue com sucesso!');
+}
+
+function desfazerEntregaKit(id) {
+  var aths = getAtletas();
+  var a = aths.find(function(x){ return x.id === id; });
+  if (!a) return;
+  confirmar('↩️', 'Desfazer a entrega do kit de ' + (a.nome||'este atleta') + '?', function() {
+    a.kitRetirado = false;
+    a.kitRetiradoEm = null;
+    a.status = 'inscrito';
+    setAtletas(aths);
+    salvar();
+    renderKits();
+    closeModal('modal-kit');
+    toast('↩️ Entrega desfeita.');
+  });
+}
+
+function fmtHora(iso) {
+  if (!iso) return '';
+  var d = new Date(iso);
+  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+}
+
+// ══════════════════════════════════════════
+//  EXPORTAR KITS — PDF
+// ══════════════════════════════════════════
+function loadScript(src) {
+  return new Promise(function(resolve, reject) {
+    if (document.querySelector('script[src="'+src+'"]')) { resolve(); return; }
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function exportarKitsPDF() {
+  var ev = getEvAtivo();
+  var kits = getAtletas().filter(function(a){ return a.kitRetirado; });
+  if (!kits.length) { toast('⚠️ Nenhum kit entregue ainda!'); return; }
+
+  toast('⏳ Gerando PDF...');
+  try {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js');
+  } catch(e) { toast('❌ Erro ao carregar biblioteca PDF'); return; }
+
+  var jsPDF = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
+  var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  // Header
+  doc.setFillColor(240, 165, 0);
+  doc.rect(0, 0, 210, 20, 'F');
+  doc.setTextColor(15, 17, 23);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('FERA ESPORTES — RETIRADA DE KITS', 14, 13);
+
+  doc.setFillColor(28, 34, 48);
+  doc.rect(0, 20, 210, 12, 'F');
+  doc.setTextColor(232, 234, 240);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  var evNome = ev ? ev.nome : 'Evento';
+  doc.text('Evento: ' + evNome, 14, 28);
+  doc.text('Total: ' + kits.length + ' kits entregues', 100, 28);
+  doc.text('Gerado: ' + new Date().toLocaleString('pt-BR'), 150, 28);
+
+  // Table
+  doc.autoTable({
+    startY: 36,
+    head: [['#', 'Nome', 'Tamanho', 'Percurso', 'Cidade', 'Sexo', 'Retirado em']],
+    body: kits.map(function(a, i) {
+      return [
+        i + 1,
+        a.nome || '',
+        a.tamanho || '—',
+        a.percurso || '—',
+        a.cidade || '—',
+        a.sexo === 'F' ? 'F' : 'M',
+        a.kitRetiradoEm ? new Date(a.kitRetiradoEm).toLocaleString('pt-BR') : '—'
+      ];
+    }),
+    styles: { fontSize: 8, cellPadding: 3 },
+    headStyles: { fillColor: [240, 165, 0], textColor: [15, 17, 23], fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [28, 34, 48] },
+    bodyStyles: { fillColor: [22, 27, 37], textColor: [232, 234, 240] },
+    columnStyles: { 0: { cellWidth: 8 }, 1: { cellWidth: 48 }, 2: { cellWidth: 18 }, 3: { cellWidth: 28 }, 4: { cellWidth: 32 }, 5: { cellWidth: 10 }, 6: { cellWidth: 36 } }
+  });
+
+  // Footer
+  var pgCount = doc.internal.getNumberOfPages();
+  for (var i = 1; i <= pgCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(7);
+    doc.setTextColor(122, 132, 153);
+    doc.text('Fera Esportes · Gerado pelo sistema de gestão', 14, doc.internal.pageSize.height - 6);
+    doc.text('Pág. ' + i + '/' + pgCount, 190, doc.internal.pageSize.height - 6, { align: 'right' });
+  }
+
+  var filename = 'kits-' + (ev ? ev.nome.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'') : 'evento') + '-' + new Date().toISOString().slice(0,10) + '.pdf';
+  doc.save(filename);
+  toast('📄 PDF exportado com ' + kits.length + ' registros!');
+}
+
+// ══════════════════════════════════════════
+//  EXPORTAR KITS — EXCEL
+// ══════════════════════════════════════════
+function exportarKitsExcel() {
+  var ev = getEvAtivo();
+  var kits = getAtletas().filter(function(a){ return a.kitRetirado; });
+  if (!kits.length) { toast('⚠️ Nenhum kit entregue ainda!'); return; }
+
+  loadXLSX(function() {
+    var header = ['#', 'Nome', 'Tamanho', 'Percurso', 'Cidade', 'Estado', 'Sexo', 'Telefone', 'E-mail', 'Categoria', 'Pagamento', 'Retirado em'];
+    var rows = kits.map(function(a, i) {
+      return [
+        i + 1,
+        a.nome || '',
+        a.tamanho || '',
+        a.percurso || '',
+        a.cidade || '',
+        a.estado || '',
+        a.sexo === 'F' ? 'Feminino' : 'Masculino',
+        a.telefone || '',
+        a.email || '',
+        a.categoria || '',
+        a.pago === 'sim' ? 'Pago' : 'Pendente',
+        a.kitRetiradoEm ? new Date(a.kitRetiradoEm).toLocaleString('pt-BR') : ''
+      ];
+    });
+
+    var wsData = [header].concat(rows);
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // Column widths
+    ws['!cols'] = [
+      {wch:5},{wch:32},{wch:10},{wch:16},{wch:18},{wch:8},{wch:12},
+      {wch:16},{wch:26},{wch:14},{wch:12},{wch:20}
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Kits Entregues');
+
+    // Adicionar aba resumo
+    var totalM = kits.filter(function(a){return a.sexo!=='F';}).length;
+    var totalF = kits.filter(function(a){return a.sexo==='F';}).length;
+    var sizes = {PP:0,P:0,M:0,G:0,GG:0,XG:0};
+    kits.forEach(function(a){ if(sizes[a.tamanho]!==undefined) sizes[a.tamanho]++; });
+
+    var resumo = [
+      ['RESUMO — KITS ENTREGUES'],
+      ['Evento', ev ? ev.nome : ''],
+      ['Data exportação', new Date().toLocaleString('pt-BR')],
+      [''],
+      ['Total entregues', kits.length],
+      ['Masculino', totalM],
+      ['Feminino', totalF],
+      [''],
+      ['TAMANHOS'],
+    ].concat(Object.keys(sizes).map(function(s){ return [s, sizes[s]]; }));
+
+    var wsRes = XLSX.utils.aoa_to_sheet(resumo);
+    wsRes['!cols'] = [{wch:22},{wch:16}];
+    XLSX.utils.book_append_sheet(wb, wsRes, 'Resumo');
+
+    var filename = 'kits-' + (ev ? ev.nome.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'') : 'evento') + '-' + new Date().toISOString().slice(0,10) + '.xlsx';
+    XLSX.writeFile(wb, filename);
+    toast('📊 Excel exportado com ' + kits.length + ' registros!', 3000);
+  });
+}
+
+// ══════════════════════════════════════════
+//  PARTICIPANTE MANUAL
+// ══════════════════════════════════════════
+var _ALL_SIZES = ['','PP','P','M','G','GG','XG','XGG','XXG','GGG','XXX'];
+
+function abrirModalAtletaManual() {
+  var ev = getEvAtivo();
+  if (!ev) { toast('⚠️ Nenhum evento ativo!'); return; }
+  var html = '<div class="modal-title">➕ Novo Participante</div>';
+  html += '<div class="inp-wrap"><label class="inp-label">👤 Nome *</label><input class="inp" id="m-nome" placeholder="Nome completo"></div>';
+  html += '<div class="inp-row">';
+  html += '<div class="inp-wrap"><label class="inp-label">#️⃣ N° Atleta</label><input class="inp" id="m-num" type="number" placeholder="Ex: 142"></div>';
+  html += '<div class="inp-wrap"><label class="inp-label">⚥ Sexo</label><select class="inp" id="m-sexo"><option value="M">♂ Masculino</option><option value="F">♀ Feminino</option></select></div>';
+  html += '</div>';
+  html += '<div class="inp-row">';
+  html += '<div class="inp-wrap"><label class="inp-label">👕 Tamanho</label><select class="inp" id="m-tam">';
+  html += _ALL_SIZES.map(function(t){return '<option value="'+t+'">'+(t||'— Não informado —')+'</option>';}).join('');
+  html += '</select></div>';
+  html += '<div class="inp-wrap"><label class="inp-label">🏃 Percurso</label><input class="inp" id="m-perc" placeholder="Ex: 5km"></div>';
+  html += '</div>';
+  html += '<div class="inp-row">';
+  html += '<div class="inp-wrap"><label class="inp-label">📞 Telefone</label><input class="inp" id="m-tel" type="tel" placeholder="44999..."></div>';
+  html += '<div class="inp-wrap"><label class="inp-label">🏙️ Cidade</label><input class="inp" id="m-cid" placeholder="Paranavaí"></div>';
+  html += '</div>';
+  html += '<div class="inp-row">';
+  html += '<div class="inp-wrap"><label class="inp-label">✉️ E-mail</label><input class="inp" id="m-email" placeholder="email@"></div>';
+  html += '<div class="inp-wrap"><label class="inp-label">🤝 Equipe</label><input class="inp" id="m-equipe" placeholder="Assessoria..."></div>';
+  html += '</div>';
+  html += '<div class="inp-row">';
+  html += '<div class="inp-wrap"><label class="inp-label">💰 Pagamento</label><select class="inp" id="m-pago"><option value="sim">✅ Pago</option><option value="nao" selected>⚠️ Pendente</option></select></div>';
+  html += '<div class="inp-wrap"><label class="inp-label">🎂 Nascimento</label><input class="inp" id="m-nasc" type="date"></div>';
+  html += '</div>';
+  html += '<div style="display:flex;gap:7px;margin-top:8px">';
+  html += '<button class="btn btn-gold" style="flex:1" onclick="salvarAtletaManual()">✅ Adicionar</button>';
+  html += '<button class="btn btn-dark" style="flex:1" onclick="closeModal(\'modal-kit\')">Cancelar</button>';
+  html += '</div>';
+  document.getElementById('modal-kit-content').innerHTML = html;
+  openModal('modal-kit');
+}
+
+function salvarAtletaManual() {
+  var ev = getEvAtivo(); if (!ev) return;
+  var nome = (document.getElementById('m-nome').value||'').trim();
+  if (!nome) { toast('⚠️ Nome obrigatório!'); return; }
+  var nasc = document.getElementById('m-nasc').value || '';
+  var sexo = document.getElementById('m-sexo').value || 'M';
+  var ath = {
+    id: 'a_' + Date.now() + '_m_' + Math.random().toString(36).slice(2,6),
+    nome: nome,
+    numero: (document.getElementById('m-num').value||'').trim(),
+    telefone: normTel(document.getElementById('m-tel').value||''),
+    email: document.getElementById('m-email').value.trim(),
+    nasc: nasc,
+    cidade: document.getElementById('m-cid').value.trim(),
+    estado: '',
+    sexo: sexo,
+    tamanho: document.getElementById('m-tam').value,
+    percurso: document.getElementById('m-perc').value.trim(),
+    equipe: document.getElementById('m-equipe').value.trim(),
+    status: 'inscrito',
+    pago: document.getElementById('m-pago').value,
+    numero: (document.getElementById('m-num').value||'').trim(),
+    categoria: calcCat(nasc, sexo),
+    kitRetirado: false, kitRetiradoEm: null,
+    criado: new Date().toISOString()
+  };
+  var aths = getAtletas();
+  aths.push(ath);
+  setAtletas(aths);
+  salvar();
+  closeModal('modal-kit');
+  renderKits();
+  renderDash();
+  renderAtletas();
+  toast('✅ ' + nome + ' adicionado!');
+}
+
+// ══════════════════════════════════════════
+//  EXPORTAR TODOS PARTICIPANTES
+// ══════════════════════════════════════════
+function exportarTodosExcel() {
+  var ev = getEvAtivo();
+  var aths = getAtletas();
+  if (!aths.length) { toast('⚠️ Nenhum participante cadastrado!'); return; }
+  loadXLSX(function() {
+    var header = ['#','Nome','N° Atleta','Tamanho','Percurso','Sexo','Cidade','Estado','Telefone','E-mail','Equipe','Categoria','Pagamento','Kit Retirado','Retirado em','Data Nasc.'];
+    var rows = aths.map(function(a,i){
+      return [
+        i+1, a.nome||'', a.numero||'', a.tamanho||'', a.percurso||'',
+        a.sexo==='F'?'Feminino':'Masculino', a.cidade||'', a.estado||'',
+        a.telefone||'', a.email||'', a.equipe||'', a.categoria||'',
+        a.pago==='sim'?'Pago':'Pendente',
+        a.kitRetirado?'Sim':'Não',
+        a.kitRetiradoEm ? new Date(a.kitRetiradoEm).toLocaleString('pt-BR') : '',
+        a.nasc ? fmtData(a.nasc) : ''
+      ];
+    });
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.aoa_to_sheet([header].concat(rows));
+    ws['!cols'] = [{wch:5},{wch:32},{wch:10},{wch:10},{wch:16},{wch:12},{wch:18},{wch:8},{wch:16},{wch:26},{wch:20},{wch:14},{wch:12},{wch:12},{wch:20},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Todos Participantes');
+    var filename = 'participantes-' + (ev?ev.nome.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,''):'evento') + '-' + new Date().toISOString().slice(0,10) + '.xlsx';
+    XLSX.writeFile(wb, filename);
+    toast('📋 Excel exportado com '+aths.length+' participantes!', 3000);
+  });
+}
+
+// ══════════════════════════════════════════
+//  IMPORTAR
+// ══════════════════════════════════════════
+var _hdrs=[], _rows=[];
+function checkImportWarn(){
+  document.getElementById('import-ev-warn').style.display=getEvAtivo()?'none':'block';
+}
+function handleDrop(e){e.preventDefault();var f=e.dataTransfer.files[0];if(f)processFile(f);}
+function handleFile(e){var f=e.target.files[0];if(f)processFile(f);e.target.value='';}
+function processFile(file){
+  if(!getEvAtivo()){toast('⚠️ Ative um evento primeiro!');nav('pg-eventos');return;}
+  var ext=file.name.split('.').pop().toLowerCase();
+  document.getElementById('import-loading').style.display='block';
+  document.getElementById('map-card').style.display='none';
+  document.getElementById('import-done').style.display='none';
+  if(ext==='csv'){var r=new FileReader();r.onload=function(e){parseCSV(e.target.result);};r.readAsText(file,'UTF-8');}
+  else loadXLSX(function(){parseExcel(file);});
+}
+function loadXLSX(cb){
+  if(window.XLSX){cb();return;}
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload=cb; s.onerror=function(){toast('❌ Falha ao carregar leitor Excel. Verifique conexão.');document.getElementById('import-loading').style.display='none';};
+  document.head.appendChild(s);
+}
+function parseExcel(file){
+  var r=new FileReader();
+  r.onload=function(e){
+    try{
+      var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',raw:false});
+      var ws=wb.Sheets[wb.SheetNames[0]];
+      var raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      var hi=0;
+      for(var i=0;i<Math.min(10,raw.length);i++){if(raw[i].filter(function(c){return String(c).trim();}).length>=3){hi=i;break;}}
+      _hdrs=raw[hi].map(function(h){return String(h).trim();});
+      _rows=raw.slice(hi+1).filter(function(r){return r.some(function(c){return String(c).trim();});}).map(function(r){
+        var o={};_hdrs.forEach(function(h,i){o[h]=String(r[i]!=null?r[i]:'').trim();});return o;
+      });
+      finalizarLeitura();
+    }catch(err){toast('❌ Erro Excel: '+err.message);document.getElementById('import-loading').style.display='none';}
+  };
+  r.readAsArrayBuffer(file);
+}
+function parseCSV(text){
+  try{
+    var fl=text.split('\n')[0];
+    var sep=fl.split(';').length>fl.split(',').length?';':',';
+    var lines=text.split(/\r?\n/).filter(function(l){return l.trim();});
+    if(lines.length<2){toast('❌ CSV vazio.');document.getElementById('import-loading').style.display='none';return;}
+    function pl(line){
+      var res=[],cur='',inQ=false;
+      for(var i=0;i<line.length;i++){var c=line[i];if(c==='"'){inQ=!inQ;}else if(c===sep&&!inQ){res.push(cur.trim());cur='';}else cur+=c;}
+      res.push(cur.trim());return res;
+    }
+    _hdrs=pl(lines[0]).map(function(h){return h.replace(/^\uFEFF/,'').trim();});
+    _rows=lines.slice(1).map(function(l){
+      var vs=pl(l),o={};_hdrs.forEach(function(h,i){o[h]=(vs[i]||'').trim();});return o;
+    }).filter(function(r){return Object.values(r).some(function(v){return v;});});
+    finalizarLeitura();
+  }catch(err){toast('❌ Erro CSV: '+err.message);document.getElementById('import-loading').style.display='none';}
+}
+function finalizarLeitura(){
+  document.getElementById('import-loading').style.display='none';
+  if(!_rows.length){toast('⚠️ Planilha vazia.');return;}
+  renderColMap();
+  document.getElementById('map-card').style.display='block';
+  // Show status legend if status/pago column detected
+  var am=autoDetect(_hdrs);
+  var leg=document.getElementById('status-legend');
+  if(leg) leg.style.display=(am.status||am.pago)?'block':'none';
+  toast('📊 '+_rows.length+' linhas lidas!');
+}
+function autoDetect(headers){
+  var map={},norm=function(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\s_\-\.\/\(\)]/g,'');};
+  var fields={
+    nome:['nomecompleto','nome','name','atleta','participante','corredor'],
+    telefone:['telefone','celular','whatsapp','phone','fone','tel'],
+    email:['email','e-mail','mail'],
+    nasc:['datadenascimento','datanascimento','nascimento','nasc'],
+    cidade:['cidade','city','municipio'],
+    estado:['estado','uf'],
+    sexo:['sexo','genero','gender'],
+    tamanho:['tamanho','camiseta','camisa','shirt','tam','tamanhodacamiseta','kitdainscricao','kitinscricao'],
+    percurso:['percurso','modalidade','prova','distancia','km','tipodaprova','modalidadedaprova'],
+    equipe:['equipe','team','assessoria','clube'],
+    status:['statusdainscricao','statusinscricao','status','situacao'],
+    pago:['statusdainscricao','statusinscricao','pagamento','pago','payment','tipodepagamento','formadepagamento'],
+    kit:['kitescolhido','kitdainscricao','kit']
+  };
+  var used={};
+  Object.keys(fields).forEach(function(field){
+    headers.forEach(function(h){
+      if(used[h])return;
+      var hn=norm(h);
+      if(fields[field].some(function(a){return hn===a||hn.includes(norm(a));})){
+        if(!map[field]){map[field]=h;used[h]=true;}
+      }
+    });
+  });
+  return map;
+}
+function renderColMap(){
+  var am=autoDetect(_hdrs);
+  var fields=[{k:'nome',l:'👤 Nome'},{k:'telefone',l:'📞 Telefone'},{k:'email',l:'✉️ Email'},{k:'nasc',l:'🎂 Nascimento'},{k:'cidade',l:'🏙️ Cidade'},{k:'estado',l:'🗺️ Estado'},{k:'sexo',l:'⚥ Sexo'},{k:'tamanho',l:'👕 Tamanho / Kit'},{k:'percurso',l:'🏃 Percurso / Tipo'},{k:'equipe',l:'🤝 Equipe'},{k:'status',l:'📋 Status da Inscrição'},{k:'pago',l:'💰 Pagamento (Status)'},{k:'kit',l:'📦 Kit Escolhido'}];
+  document.getElementById('col-map').innerHTML=fields.map(function(f){
+    return '<div class="col-row" style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--brd)">'
+      +'<div style="font-size:12px;font-weight:600">'+f.l+'</div>'
+      +'<select id="map-'+f.k+'" style="background:var(--surf2);border:1px solid var(--brd2);border-radius:7px;padding:5px 7px;color:var(--txt);font-size:11px;max-width:160px;cursor:pointer;outline:none">'
+      +'<option value="">— Não mapear —</option>'
+      +_hdrs.map(function(h){return'<option value="'+h+'"'+(h===am[f.k]?' selected':'')+'>'+h.substring(0,22)+'</option>';}).join('')
+      +'</select></div>';
+  }).join('');
+}
+function gv(k){var el=document.getElementById('map-'+k);return el?el.value:'';}
+function normSexo(v){if(!v)return'M';var l=v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');return(l[0]==='f'||l.includes('fem'))?'F':'M';}
+function normPago(v){if(!v)return'nao';var l=v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();// Paid statuses (Fera Esportes: 'Received' = pago confirmado)
+if(l==='received'||l.includes('receiv')||l.includes('pago')||l.includes('confirm')||l.includes('aprovad')||l==='sim'||l==='1'||l==='true'||l==='paid')return'sim';// Not paid: Aguardando, Checkout (carrinho abandonado), Cancelled
+if(l.includes('aguard')||l.includes('pend')||l==='checkout'||l.includes('cancel')||l.includes('expirad')||l==='nao'||l==='0'||l==='false'||l==='n')return'nao';return'nao';}
+function normData(v){if(!v)return'';var s=String(v).trim();if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.substring(0,10);var br=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);if(br)return br[3]+'-'+br[2].padStart(2,'0')+'-'+br[1].padStart(2,'0');return'';}
+function normTamanho(v){if(!v)return'';var raw=String(v).trim().toUpperCase();var sizes=['XXG','XGG','GGG','XXX','XG','GG','PP','P','M','G'];for(var i=0;i<sizes.length;i++){if(raw===sizes[i]||raw.indexOf(sizes[i])>=0)return sizes[i];}return'';}
+function normTel(v){if(!v)return'';var d=String(v).replace(/\D/g,'');return d.length>=8?d:'';}
+function calcCat(nasc,sexo){if(!nasc)return'';var yr=parseInt((nasc||'').split('-')[0]);if(!yr)return'';var age=new Date().getFullYear()-yr;var s=sexo==='F'?'F':'M';if(age<18)return'Sub-18 '+s;if(age<30)return'18-29 '+s;if(age<40)return'30-39 '+s;if(age<50)return'40-49 '+s;if(age<60)return'50-59 '+s;return'60+ '+s;}
+function importar(){
+  var ev=getEvAtivo();if(!ev){toast('⚠️ Nenhum evento ativo!');return;}
+  var nc=gv('nome'),tc=gv('telefone'),ec=gv('email'),nasc=gv('nasc'),cc=gv('cidade'),uc=gv('estado'),sc=gv('sexo'),szc=gv('tamanho'),pc=gv('percurso'),eqc=gv('equipe'),stc=gv('status'),pgc=gv('pago'),kc=gv('kit');
+  var defCity=(document.getElementById('def-city').value||'').trim();
+  var added=0,skipped=0,existing=ev.atletas||[];
+  _rows.forEach(function(row,idx){
+    var nome=nc?row[nc]:'',tel=tc?row[tc]:'';
+    if(!nome.trim()&&!tel.trim()){skipped++;return;}
+    var tam=szc?normTamanho(row[szc]):'';
+    if(!tam&&kc)tam=normTamanho(row[kc]);
+    var pago='nao';
+    if(pgc) pago=normPago(row[pgc]);
+    else if(stc) pago=normPago(row[stc]); // fallback: derive payment from status column (Fera Esportes: Received=pago)
+    var nasc2=normData(nasc?row[nasc]:''),sexo=normSexo(sc?row[sc]:''),cidade=(cc?row[cc]:'')||defCity;
+    var statusV='inscrito';
+    if(stc){var sv2=(row[stc]||'').toLowerCase();if(sv2.includes('retir')||sv2.includes('kit'))statusV='retirou';else if(sv2.includes('confirm'))statusV='confirmado';}
+    existing.push({
+      id:'a_'+Date.now()+'_'+idx+'_'+Math.random().toString(36).slice(2,6),
+      nome:nome.trim(),telefone:normTel(tel),email:ec?row[ec]:'',nasc:nasc2,
+      cidade:cidade.trim(),estado:uc?row[uc]:'',sexo:sexo,tamanho:tam,
+      percurso:pc?row[pc]:'',equipe:eqc?row[eqc]:'',status:statusV,pago:pago,
+      numero:'',categoria:calcCat(nasc2,sexo),kitRetirado:false,kitRetiradoEm:null,criado:new Date().toISOString()
+    });
+    added++;
+  });
+  ev.atletas=existing; salvar();
+  document.getElementById('map-card').style.display='none';
+  var dEl=document.getElementById('import-done');
+  dEl.style.display='block';
+  dEl.innerHTML='<div class="card" style="border-color:var(--grn)"><div style="color:var(--grn);font-weight:700;font-size:14px;margin-bottom:4px">✅ '+added+' atletas importados!</div>'+(skipped?'<div style="font-size:11px;color:var(--mut)">'+skipped+' linhas vazias ignoradas</div>':'')+'<button class="btn btn-gold" style="margin-top:10px;padding:9px" onclick="nav(\'pg-atletas\');renderDash();renderAtletas()">Ver Atletas →</button></div>';
+  toast('✅ '+added+' atletas importados!',3000);
+  _rows=[];_hdrs=[];
+}
+
+// ══════════════════════════════════════════
+//  WHATSAPP TEMPLATES
+// ══════════════════════════════════════════
+function renderWaEvPicker() {
+  var sel = document.getElementById('wa-ev-link-sel');
+  if (!sel) return;
+  var evs = Object.values(db.events).sort(function(a,b){return (b.criado||'').localeCompare(a.criado||'');});
+  sel.innerHTML = '<option value="">— Nenhum evento selecionado —</option>'
+    + evs.map(function(ev) {
+      // Build inscription link: prefer inscricao.php, fallback to evento.php, fallback to urlSite
+      var evId = ev.evId || ((ev.urlSite||'').match(/id=(\d+)/i)||[])[1] || '';
+      var link = evId
+        ? 'https://feraesportes.com.br/inscricao.php?id=' + evId
+        : (ev.urlSite || '');
+      // Always show the event, even without a link
+      var val = link || (ev.urlSite || '');
+      return '<option value="' + val + '">' + ev.nome.substring(0,40) + '</option>';
+    }).join('');
+  atualizarWaEvLink();
+}
+function atualizarWaEvLink() {
+  var sel = document.getElementById('wa-ev-link-sel');
+  var prev = document.getElementById('wa-ev-link-preview');
+  if (!sel || !prev) return;
+  if (sel.value) {
+    prev.style.display = 'block';
+    prev.innerHTML = '🔗 <a href="' + sel.value + '" target="_blank" style="color:var(--blu)">' + sel.value + '</a>';
+  } else {
+    prev.style.display = 'none';
+  }
+}
+
+
+var TEMPLATES = [
+  { tag:'🏁 Pós-evento · Parabéns', cor:'var(--grn)', msg:'Olá {nome}! 🏆 Parabéns pela sua participação na {evento}! Foi incrível ter você conosco. Esperamos te ver na próxima edição. Continue correndo!' },
+  { tag:'⭐ Pós-evento · Feedback NPS', cor:'var(--blu)', msg:'Oi {nome}! 😊 Você participou da {evento} e sua opinião é muito importante para nós. De 0 a 10, qual nota você daria para o evento? Responda aqui no WhatsApp mesmo. Obrigado! — Fera Esportes' },
+  { tag:'💰 Cobrança · Pagamento pendente', cor:'var(--red)', msg:'Olá {nome}! Identificamos que sua inscrição na {evento} ainda está com pagamento pendente. Para garantir sua vaga e kit, regularize o quanto antes. Qualquer dúvida, é só responder aqui.' },
+  { tag:'⏰ Lembrete · Último dia pagamento', cor:'var(--red)', msg:'Atenção {nome}! ⚠️ Hoje é o último dia para regularizar o pagamento da {evento}. Não perca sua vaga! Faça o pagamento agora e garanta seu kit.' },
+  { tag:'👕 Kit · Disponível para retirada', cor:'var(--gold)', msg:'Oi {nome}! 🎽 Seu kit {tamanho} para a {evento} está disponível para retirada! Confira local e horário nas nossas redes sociais. Não deixe para a última hora!' },
+  { tag:'📍 Lembrete · D-7 do evento', cor:'var(--gold)', msg:'Faltam 7 dias! 🗓️ {nome}, a {evento} em {cidade} está chegando! Prepare seu tênis, descanse bem e hidrate-se. Nos vemos na largada!' },
+  { tag:'🌅 Lembrete · Véspera do evento', cor:'var(--gold)', msg:'Amanhã é o grande dia, {nome}! 🌟 Não esqueça: documento, número de peito, chip e kit {tamanho}. Durma bem e nos vemos na largada da {evento}! Boa corrida!' },
+  { tag:'🎉 Convite · Próximo evento', cor:'var(--pur)', msg:'Oi {nome}! 🎉 Temos um novo evento chegando e você não pode ficar de fora! Inscrições abertas — garanta sua vaga com desconto especial para quem já correu conosco.\n\n👉 Inscreva-se: {link}' },
+  { tag:'🏷️ Convite · Desconto de fidelidade', cor:'var(--pur)', msg:'Olá {nome}! Como atleta fiel da Fera Esportes, você tem acesso a um desconto exclusivo no próximo evento! 🏆 É nossa forma de agradecer por correr com a gente.\n\n👉 Inscreva-se: {link}' },
+  { tag:'📢 Informativo · Resultado publicado', cor:'var(--blu)', msg:'Ei {nome}! 🏅 O resultado oficial da {evento} já está disponível. Acesse nosso site para ver sua posição e tempo. Parabéns pelo desempenho! — Fera Esportes' },
+  { tag:'📸 Fotos · Disponíveis', cor:'var(--blu)', msg:'Oi {nome}! 📷 As fotos da {evento} já estão disponíveis! Acesse nosso site ou redes sociais e encontre a sua. Não esqueça de marcar a Fera Esportes!' },
+  { tag:'🔔 Lembrete · Retirar kit no dia', cor:'var(--mut)', msg:'Atenção {nome}! Lembre-se de retirar seu kit {tamanho} na {evento} antes do início. Apresente documento com foto. Te esperamos!' }
+];
+function renderTemplates() {
+  renderWaEvPicker();
+  var lst = document.getElementById('tpl-list');
+  lst.innerHTML = TEMPLATES.map(function(t, i) {
+    return '<div class="tpl" onclick="usarTemplate(' + i + ')">'
+      + '<div class="tpl-tag" style="color:' + t.cor + '">' + t.tag + '</div>'
+      + '<div class="tpl-preview">' + t.msg + '</div>'
+      + '</div>';
+  }).join('');
+}
+function usarTemplate(i) {
+  var tpl = TEMPLATES[i];
+  var ta = document.getElementById('wa-msg');
+  ta.value = tpl.msg;
+  ta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  ta.focus();
+  toast('✅ Template aplicado!');
+}
+
+// ══════════════════════════════════════════
+//  WHATSAPP LOTE
+// ══════════════════════════════════════════
+var _loteTam=10, _loteIdx=0, _loteLista=[];
+function setLote(n,btn){_loteTam=n;document.querySelectorAll('#lote-chips .chip').forEach(function(c){c.classList.remove('on');});btn.classList.add('on');}
+function prepararLote(){
+  var msg=(document.getElementById('wa-msg').value||'').trim();
+  if(!msg){toast('⚠️ Escolha um template ou escreva uma mensagem!');return;}
+  var filtro=document.getElementById('wa-filtro').value;
+  var aths=getAtletas();
+  _loteLista=aths.filter(function(a){
+    var tel=(a.telefone||'').replace(/\D/g,'');
+    if(tel.length<10)return false;
+    if(filtro==='nao_pago'&&a.pago==='sim')return false;
+    if(filtro==='pago'&&a.pago!=='sim')return false;
+    if(filtro==='sem_kit'&&a.kitRetirado)return false;
+    return true;
+  });
+  _loteIdx=0;
+  document.getElementById('wa-info').style.display='block';
+  document.getElementById('wa-info').innerHTML='<div class="card"><div style="font-size:12px;color:var(--mut);margin-bottom:8px">📋 <strong style="color:var(--txt)">'+_loteLista.length+'</strong> atletas com telefone · Lote de '+_loteTam+'</div><button class="btn btn-green" onclick="enviarProxLote()">📤 Enviar Próximo Lote</button></div>';
+  renderLote();
+}
+function enviarProxLote(){
+  _loteIdx+=_loteTam;
+  if(_loteIdx>=_loteLista.length){toast('✅ Todos os lotes enviados!');document.getElementById('wa-info').style.display='none';document.getElementById('wa-queue').style.display='none';return;}
+  renderLote();toast('📤 Próximo lote: '+(_loteIdx+1)+'-'+Math.min(_loteIdx+_loteTam,_loteLista.length));
+}
+function renderLote(){
+  var msg=document.getElementById('wa-msg').value, ev=getEvAtivo();
+  var slice=_loteLista.slice(_loteIdx,_loteIdx+_loteTam);
+  document.getElementById('wa-queue').style.display='block';
+  document.getElementById('wa-queue').innerHTML='<div style="font-size:10px;color:var(--mut);margin-bottom:8px;font-weight:700">Lote '+(Math.floor(_loteIdx/_loteTam)+1)+' · '+(_loteIdx+1)+'–'+(_loteIdx+slice.length)+'</div>'
+    +slice.map(function(a,i){
+      var tel=a.telefone.replace(/\D/g,'');
+      var txt=interp(msg,a,ev);
+      return '<div class="wa-item"><div class="wa-num">'+(_loteIdx+i+1)+'</div>'
+        +'<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+a.nome+'</div>'
+        +'<div style="font-size:10px;color:var(--mut)">'+tel+(a.cidade?' · '+a.cidade:'')+'</div></div>'
+        +'<a href="https://wa.me/55'+tel+'?text='+encodeURIComponent(txt)+'" target="_blank" style="background:#128C7E;color:#fff;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;text-decoration:none;flex-shrink:0">WA</a>'
+        +'</div>';
+    }).join('');
+}
+function interp(msg,a,ev){
+  var link = ev ? (ev.urlSite || (ev.evId ? 'https://feraesportes.com.br/inscricao.php?id='+ev.evId : '')) : '';
+  // If WA picker has a different event selected, use that link
+  var selEl = document.getElementById('wa-ev-link-sel');
+  if (selEl && selEl.value) link = selEl.value;
+  return msg
+    .replace(/\{nome\}/gi, a.nome||'Atleta')
+    .replace(/\{evento\}/gi, ev?ev.nome:'evento')
+    .replace(/\{cidade\}/gi, a.cidade||(ev?ev.cidade:'')||'')
+    .replace(/\{tamanho\}/gi, a.tamanho||'')
+    .replace(/\{percurso\}/gi, a.percurso||'')
+    .replace(/\{link\}/gi, link);
+}
+
+// ══════════════════════════════════════════
+//  BANNER FALLBACK
+// ══════════════════════════════════════════
+// Tries multiple image extensions in order before showing placeholder
+var _BANNER_EXTS = ['jpg','jpeg','png','PNG','jpg.jpeg'];
+function feraImgFallback(el) {
+  var tried = parseInt(el.dataset.tried || 0);
+  var evId = el.dataset.evid || '';
+  if (evId && tried < _BANNER_EXTS.length) {
+    el.dataset.tried = tried + 1;
+    // Try next extension in the same folder
+    var base = 'https://feraesportes.com.br/assets/img/img_eventos/' + evId + '/banner.';
+    el.src = base + _BANNER_EXTS[tried];
+  } else if (tried < _BANNER_EXTS.length && el.src) {
+    // Try replacing extension on current URL
+    el.dataset.tried = tried + 1;
+    var base2 = el.src.replace(/\.[^/.]+$/, '');
+    el.src = base2 + '.' + _BANNER_EXTS[tried];
+  } else {
+    el.style.display = 'none';
+    var ph = el.parentElement && el.parentElement.querySelector('.ev-banner-placeholder');
+    if (ph) ph.style.display = 'flex';
+  }
+}
+
+// ══════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════
+function fmtData(d){if(!d)return'';var p=String(d).split('-');if(p.length===3)return p[2]+'/'+p[1]+'/'+p[0];return d;}
+function fmtMoney(v){return parseFloat(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function setText(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+// Fix existing saved events: backfill evId and bannerUrl from urlSite
+(function migrateEvents() {
+  var changed = false;
+  Object.values(db.events).forEach(function(ev) {
+    if (!ev.evId && ev.urlSite) {
+      var m = ev.urlSite.match(/id=(\d+)/i);
+      if (m) { ev.evId = m[1]; changed = true; }
+    }
+    if (!ev.bannerUrl && ev.evId) {
+      ev.bannerUrl = 'https://feraesportes.com.br/assets/img/img_eventos/' + ev.evId + '/banner.png';
+      changed = true;
+    }
+  });
+  if (changed) try { localStorage.setItem('fera_db_v2', JSON.stringify(db)); } catch(e) {}
+})();
+
+atualizarHeader();
+renderEventos();
+renderTemplates();
+
+// Estado offline/online ao carregar
+if (!_isOnline) {
+  document.getElementById('offline-banner').classList.add('on');
+}
+atualizarBtnSync();
+
+// Firebase: sincroniza na inicialização se configurado
+if (FIREBASE_URL) {
+  if (_isOnline) {
+    setTimeout(function(){ pullCloud(true); }, 600);
+  } else {
+    toast('📵 Offline — trabalhando com dados locais');
+  }
+}
+</script>
+</body>
+</html>
